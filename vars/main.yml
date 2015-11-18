@@ -1,2 +1,5 @@
 ---
-# vars file for solita.jenkins
+solita_jenkins_plugins_required:
+  - job-dsl
+
+jenkins_plugins: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"

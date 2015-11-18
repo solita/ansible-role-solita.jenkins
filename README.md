@@ -11,17 +11,27 @@ The role is tested on Ubuntu 14.04 LTS (Trusty Thar), but it should work on all 
 Role Variables
 --------------
 
+    solita_jenkins_plugins: []
+
+The plugin IDs of additional Jenkins plugins to install. You can see a plugin's plugin ID on its [wiki page](https://wiki.jenkins-ci.org/display/JENKINS/Plugins).
+
+`solita.jenkins` depends on the `job-dsl` plugin and always installs it.
+
 Dependencies
 ------------
 
-- [`geerlingguy.jenkins`](https://galaxy.ansible.com/detail#/role/440)
+- [`geerlingguy.jenkins`](https://galaxy.ansible.com/detail#/role/440) version `1.2.5`
 
 Example Playbook
 ----------------
 
     - hosts: servers
+      sudo: yes
+      vars:
+        solita_jenkins_plugins:
+          - timestamper
       roles:
-         - role: solita.jenkins
+         - solita.jenkins
 
 License
 -------
