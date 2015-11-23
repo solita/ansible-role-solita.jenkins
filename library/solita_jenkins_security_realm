@@ -1,0 +1,56 @@
+#!/usr/bin/python
+SCRIPT="""
+import groovy.json.*
+import jenkins.model.*
+import hudson.security.*
+import org.jenkinsci.main.modules.cli.auth.ssh.UserPropertyImpl
+
+jsonSlurper = new JsonSlurper()
+def params = jsonSlurper.parseText('%s')
+
+result = [
+    changed: false
+]
+
+def jenkins = Jenkins.getInstance()
+def currentSecurityRealm = jenkins.getSecurityRealm()
+
+if (params['realm'] == 'jenkins') {
+    if (!(currentSecurityRealm instanceof HudsonPrivateSecurityRealm)) {
+        def newSecurityRealm = new HudsonPrivateSecurityRealm(false)
+        def user = newSecurityRealm.createAccount('solita_jenkins', 'password')
+        user.addProperty(new UserPropertyImpl("trolol"));
+        jenkins.setSecurityRealm(newSecurityRealm)
+        jenkins.save()
+        result.changed = true
+    }
+} else if (params['realm'] == 'none') {
+    if (!currentSecurityRealm.is(SecurityRealm.NO_AUTHENTICATION)) {
+        jenkins.setSecurityRealm(SecurityRealm.NO_AUTHENTICATION)
+        jenkins.save()
+        result.changed = true
+    }
+}
+
+println JsonOutput.toJson(result)
+"""
+
+import json
+
+def main():
+    module = AnsibleModule(
+        argument_spec = dict(
+            realm=dict(required=True, choices=['jenkins', 'none']),
+        )
+    )
+
+    rc, stdout, stderr = module.run_command("java -jar /opt/jenkins-cli.jar -s 'http://localhost:8080' groovy =",
+                                            data=(SCRIPT % json.dumps(module.params)))
+    if (rc != 0):
+        module.fail_json(msg=stderr)
+
+    print stdout
+
+from ansible.module_utils.basic import *
+if __name__ == '__main__':
+    main()
