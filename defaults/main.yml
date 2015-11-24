@@ -1,2 +1,4 @@
 ---
 solita_jenkins_plugins: []
+solita_jenkins_users: []
+solita_jenkins_absent_users: []
