@@ -12,3 +12,43 @@
 - name: Remove absent Jenkins users
   solita_jenkins_user: name={{ item }} state=absent
   with_items: "{{ solita_jenkins_absent_users }}"
+
+- name: Create the job-dsl job
+  shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ create-job job-dsl < '{{ role_path }}/files/job-dsl-config.xml'
+  args:
+    creates: /var/lib/jenkins/jobs/job-dsl/config.xml
+
+- name: Update the job-dsl job configuration
+  sudo: yes
+  sudo_user: jenkins
+  copy:
+    src: job-dsl-config.xml
+    dest: /var/lib/jenkins/jobs/job-dsl/config.xml
+  register: update_job_dsl_job
+
+- name: Reload the job-dsl job
+  command: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ reload-job job-dsl
+  when: update_job_dsl_job | changed
+
+- name: Create the job-dsl workspace
+  sudo: yes
+  sudo_user: jenkins
+  file:
+    path: /var/lib/jenkins/jobs/job-dsl/workspace
+    state: directory
+
+- name: Update the projects Job DSL scripts
+  tags: solita_jenkins_job_dsl
+  sudo: yes
+  sudo_user: jenkins
+  copy:
+    src: "{{ item }}"
+    dest: /var/lib/jenkins/jobs/job-dsl/workspace
+  with_fileglob:
+    - "{{ playbook_dir }}/job_dsl/*.groovy"
+  register: update_job_dsl_scripts
+
+- name: Run the project's Job DSL scripts
+  tags: solita_jenkins_job_dsl
+  shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ build job-dsl -s -v
+  when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts | changed)
