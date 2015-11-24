@@ -1,2 +1,14 @@
 ---
-# tasks file for solita.jenkins
+- name: Create an SSH key for the Unix user
+  user: name={{ ansible_user_id }} generate_ssh_key=yes
+
+- name: Enable Jenkins' built-in authentication and authorization
+  solita_jenkins_security_realm: realm=jenkins
+
+- name: Add present Jenkins users
+  solita_jenkins_user: name={{ item }} state=present
+  with_items: "{{ solita_jenkins_users }}"
+
+- name: Remove absent Jenkins users
+  solita_jenkins_user: name={{ item }} state=absent
+  with_items: "{{ solita_jenkins_absent_users }}"
