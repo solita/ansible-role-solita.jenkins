@@ -3,10 +3,10 @@
   user: name={{ ansible_user_id }} generate_ssh_key=yes
 
 - name: Enable Jenkins' built-in authentication and authorization
-  solita_jenkins_security_realm: realm=jenkins
+  solita_jenkins_security_realm: realm=jenkins admin_password={{ lookup('password', inventory_dir + '/default_passwords/solita_jenkins') }}
 
 - name: Add present Jenkins users
-  solita_jenkins_user: name={{ item }} state=present
+  solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/default_passwords/' + item) }} state=present
   with_items: "{{ solita_jenkins_users }}"
 
 - name: Remove absent Jenkins users

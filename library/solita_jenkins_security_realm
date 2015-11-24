@@ -15,7 +15,7 @@ result = [
 def jenkins = Jenkins.getInstance()
 def currentSecurityRealm = jenkins.getSecurityRealm()
 
-if (params['realm'] == 'jenkins') {
+if (params.realm == 'jenkins') {
     if (!(currentSecurityRealm instanceof HudsonPrivateSecurityRealm)) {
         def newSecurityRealm = new HudsonPrivateSecurityRealm(false)
         jenkins.setSecurityRealm(newSecurityRealm)
@@ -24,14 +24,14 @@ if (params['realm'] == 'jenkins') {
         strategy.add(Jenkins.ADMINISTER, 'solita_jenkins')
         jenkins.setAuthorizationStrategy(strategy)
 
-        def user = newSecurityRealm.createAccount('solita_jenkins', 'password')
-        user.addProperty(new UserPropertyImpl(params['public_key']));
+        def user = newSecurityRealm.createAccount('solita_jenkins', params.admin_password)
+        user.addProperty(new UserPropertyImpl(params.public_key));
         user.save()
 
         jenkins.save()
         result.changed = true
     }
-} else if (params['realm'] == 'none') {
+} else if (params.realm == 'none') {
     if (!currentSecurityRealm.is(SecurityRealm.NO_AUTHENTICATION)) {
         jenkins.setAuthorizationStrategy(new AuthorizationStrategy.Unsecured())
         jenkins.setSecurityRealm(SecurityRealm.NO_AUTHENTICATION)
@@ -56,6 +56,7 @@ def main():
     module = AnsibleModule(
         argument_spec = dict(
             realm=dict(required=True, choices=['jenkins', 'none']),
+            admin_password=dict(type='str')
         )
     )
 

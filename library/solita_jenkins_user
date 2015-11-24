@@ -24,7 +24,7 @@ def currentUsers = securityRealm.getAllUsers().collect { it.getId() }
 
 if (params.state == 'present') {
     if (!(params.name in currentUsers)) {
-        user = securityRealm.createAccount(params.name, 'password')
+        user = securityRealm.createAccount(params.name, params.password)
         user.save()
 
         authorizationStrategy.add(Jenkins.ADMINISTER, params.name)
@@ -51,6 +51,7 @@ def main():
         argument_spec = dict(
             name=dict(type='str', required=True),
             state=dict(choices=['present', 'absent'], default='present'),
+            password=dict(type='str')
         )
     )
 
