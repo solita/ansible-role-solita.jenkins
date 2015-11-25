@@ -33,13 +33,12 @@ if (params.realm == 'jenkins') {
     }
 } else if (params.realm == 'none') {
     if (!currentSecurityRealm.is(SecurityRealm.NO_AUTHENTICATION)) {
-        jenkins.setAuthorizationStrategy(new AuthorizationStrategy.Unsecured())
-        jenkins.setSecurityRealm(SecurityRealm.NO_AUTHENTICATION)
-
         // If we leave the user, further attempts to use jenkins-cli.jar with
         // key-based authentication enabled fail for some reason. Clearing the
         // user's SSH key wasn't enough to solve the problem.
         jenkins.getUser('solita_jenkins').delete()
+
+        jenkins.disableSecurity()
 
         jenkins.save()
         result.changed = true
