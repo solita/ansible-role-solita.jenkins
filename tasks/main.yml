@@ -2,16 +2,22 @@
 - name: Create an SSH key for the Unix user
   user: name={{ ansible_user_id }} generate_ssh_key=yes
 
-- name: Enable Jenkins' built-in authentication and authorization
-  solita_jenkins_security_realm: realm=jenkins admin_password={{ lookup('password', inventory_dir + '/default_passwords/solita_jenkins') }}
+- name: Configure Jenkins security realm
+  tags: solita_jenkins_users
+  solita_jenkins_security_realm: realm={{ solita_jenkins_security_realm }} admin_password={{ lookup('password', inventory_dir + '/default_passwords/solita_jenkins') }}
+  when: solita_jenkins_security_realm is defined
 
 - name: Add present Jenkins users
+  tags: solita_jenkins_users
   solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/default_passwords/' + item) }} state=present
   with_items: "{{ solita_jenkins_users }}"
+  when: (solita_jenkins_security_realm | default(None)) == 'jenkins'
 
 - name: Remove absent Jenkins users
+  tags: solita_jenkins_users
   solita_jenkins_user: name={{ item }} state=absent
   with_items: "{{ solita_jenkins_absent_users }}"
+  when: (solita_jenkins_security_realm | default(None)) == 'jenkins'
 
 - name: Create the job-dsl job
   shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ create-job job-dsl < '{{ role_path }}/files/job-dsl-config.xml'
@@ -37,7 +43,7 @@
     path: /var/lib/jenkins/jobs/job-dsl/workspace
     state: directory
 
-- name: Update the projects Job DSL scripts
+- name: Update the Job DSL scripts
   tags: solita_jenkins_job_dsl
   sudo: yes
   sudo_user: jenkins
@@ -48,7 +54,7 @@
     - "{{ playbook_dir }}/job_dsl/*.groovy"
   register: update_job_dsl_scripts
 
-- name: Run the project's Job DSL scripts
+- name: Run the Job DSL scripts
   tags: solita_jenkins_job_dsl
   shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ build job-dsl -s -v
   when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts | changed)
