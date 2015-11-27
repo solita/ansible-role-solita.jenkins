@@ -16,17 +16,15 @@ In its default settings, this role does not change Jenkins' configuration in any
 Installation
 ------------
 
-You can install this role and its dependencies with ansible-galaxy_:
-
 .. highlight:: sh
-::
+
+You can install this role and its dependencies with ansible-galaxy_::
 
     ansible-galaxy install -p path/to/your/roles https://github.com/solita/ansible-role-solita.jenkins.git
 
-Once installed, you should be able to use the role in your playbooks:
-
 .. highlight:: yaml
-::
+
+Once installed, you should be able to use the role in your playbooks::
 
     # playbook.yml
     ---
@@ -37,8 +35,6 @@ Once installed, you should be able to use the role in your playbooks:
 -------
 Plugins
 -------
-
-.. _solita_jenkins_plugins:
 
 To add plugins to your Jenkins installation, list their plugin IDs in the variable ``solita_jenkins_plugins``. You can find a plugin's plugin ID on its `wiki page <https://wiki.jenkins-ci.org/display/JENKINS/Plugins>`_.
 
@@ -52,6 +48,7 @@ Examples
 Install the ``timestamper`` and ``git`` plugins:
 
 .. highlight:: yaml
+
 ::
 
     # playbook.yml
@@ -86,10 +83,9 @@ When a new user is created, the user's default password will be read from the fi
 Examples
 ========
 
-Enable security, add users ``alice`` and ``bob``, and remove user ``eve``:
-
 .. highlight:: yaml
-::
+
+Enable security, add users ``alice`` and ``bob``, and remove user ``eve``::
 
     # playbook.yml
     ---
@@ -104,10 +100,9 @@ Enable security, add users ``alice`` and ``bob``, and remove user ``eve``:
       roles:
          - solita.jenkins
 
-You can limit the role application to security settings and user management with the tag ``solita_jenkins_security``:
-
 .. highlight:: sh
-::
+
+You can limit the role application to security settings and user management with the tag ``solita_jenkins_security``::
 
     ansible-playbook -i environments/vagrant/inventory playbook.yml --tags solita_jenkins_security
 
@@ -122,10 +117,9 @@ To change the Job DSL script directory, set the variable ``solita_jenkins_job_ds
 Examples
 ========
 
-If you create your script in the default location, no configuration is needed:
-
 .. highlight:: groovy
-::
+
+If you create your script in the default location, no configuration is needed::
 
     // job-dsl/main.groovy
     job('my-new-job') {
@@ -133,6 +127,7 @@ If you create your script in the default location, no configuration is needed:
     }
 
 .. highlight:: yaml
+
 ::
 
     # playbook.yml
@@ -141,10 +136,9 @@ If you create your script in the default location, no configuration is needed:
       roles:
          - solita.jenkins
 
-If you want to place your scripts somewhere else, set the variable ``solita_jenkins_job_dsl_dir``:
-
 .. highlight:: yaml
-::
+
+If you want to place your scripts somewhere else, set the variable ``solita_jenkins_job_dsl_dir``::
 
     # playbook.yml
     ---
@@ -154,20 +148,11 @@ If you want to place your scripts somewhere else, set the variable ``solita_jenk
       roles:
          - solita.jenkins
 
-You can limit the role application to job and view updates with the tag ``solita_jenkins_jobs``:
-
 .. highlight:: sh
-::
+
+You can limit the role application to job and view updates with the tag ``solita_jenkins_jobs``::
 
     ansible-playbook -i environments/vagrant/inventory playbook.yml --tags solita_jenkins_jobs
-
-.. ------------
-.. Dependencies
-.. ------------
-
-.. -  `geerlingguy.jenkins`_ 
-..     - You'll need to use `this patched version <https://github.com/noidi/ansible-role-jenkins/tree/await-secured-jenkins>`_ until geerlingguy.jenkins adds `support for secured Jenkins installations <https://github.com/geerlingguy/ansible-role-jenkins/pull/31>`_.
-
 
 .. _geerlingguy.jenkins: https://galaxy.ansible.com/detail#/role/440
 .. _ansible-galaxy: http://docs.ansible.com/ansible/galaxy.html#the-ansible-galaxy-command-line-tool
