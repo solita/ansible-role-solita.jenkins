@@ -100,6 +100,16 @@ Enable security, add users ``alice`` and ``bob``, and remove user ``eve``::
       roles:
          - solita.jenkins
 
+Disable security::
+
+    # playbook.yml
+    ---
+    - hosts: servers
+      vars:
+        solita_jenkins_security_realm: none
+      roles:
+         - solita.jenkins
+
 .. highlight:: sh
 
 You can limit the role application to security settings and user management with the tag ``solita_jenkins_security``::
