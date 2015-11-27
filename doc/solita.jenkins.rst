@@ -80,6 +80,8 @@ To add and remove users, add their usernames to the lists ``solita_jenkins_users
 
 When a new user is created, the user's default password will be read from the file ``solita_jenkins_default_password/<username>`` in the inventory directory. If the file does not exist, a file containing a random password is created. For example, if your inventory file is ``environments/vagrant/inventory`` and you add the user ``alice``, you can find their default password in the file ``environments/vagrant/solita_jenkins_default_password/alice``.
 
+To limit role application to security settings and user management, use the tag ``solita_jenkins_security``.
+
 Examples
 ========
 
@@ -112,7 +114,7 @@ Disable security::
 
 .. highlight:: sh
 
-You can limit the role application to security settings and user management with the tag ``solita_jenkins_security``::
+Only update security settings and users::
 
     ansible-playbook -i environments/vagrant/inventory playbook.yml --tags solita_jenkins_security
 
@@ -123,6 +125,8 @@ Jobs and Views
 You can define jobs and views with a `Job DSL`_ script. The role looks for scripts in the directory ``job-dsl`` next to your playbook and runs the script called ``main.groovy``, which can import the other scripts in the directory.
 
 To change the Job DSL script directory, set the variable ``solita_jenkins_job_dsl_dir``.
+
+To limit role application to job and view updates, use the tag ``solita_jenkins_jobs``.
 
 Examples
 ========
@@ -160,7 +164,7 @@ If you want to place your scripts somewhere else, set the variable ``solita_jenk
 
 .. highlight:: sh
 
-You can limit the role application to job and view updates with the tag ``solita_jenkins_jobs``::
+Only update jobs and views::
 
     ansible-playbook -i environments/vagrant/inventory playbook.yml --tags solita_jenkins_jobs
 
