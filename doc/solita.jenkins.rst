@@ -172,4 +172,4 @@ You can limit the role application to job and view updates with the tag ``solita
 .. _geerlingguy.jenkins: https://galaxy.ansible.com/detail#/role/440
 .. _ansible-galaxy: http://docs.ansible.com/ansible/galaxy.html#the-ansible-galaxy-command-line-tool
 .. _Job DSL: https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin
-.. _Job DSL plugin: https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin
+.. _Job DSL plugin: `Job DSL`_
