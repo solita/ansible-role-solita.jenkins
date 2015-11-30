@@ -6,11 +6,51 @@ A Jenkins installation completely configured with Ansible. This role builds on t
 
 This role is tested on Ubuntu 14.04 LTS (Trusty Thar), but it should work on all operating systems supported by `the upstream role`_.
 
-In its default settings, this role does not change Jenkins' configuration in any way, so it is safe to run on a server with an existing Jenkins installation.
+In its default settings, this role does not change Jenkins' configuration in any way, so it's safe to apply it to a server with an existing, manually configured, Jenkins installation.
 
 .. contents::
    :backlinks: none
    :local:
+
+-------
+Example
+-------
+
+.. highlight:: yaml
+
+With this role and the `Job DSL plugin`_, your entire Jenkins configuration can be stored in text files that look something like this::
+
+    # playbook.yml
+    ---
+    - hosts: servers
+      solita_jenkins_plugins:
+        - timestamper
+        - git
+      solita_jenkins_security_realm: jenkins
+      solita_jenkins_users:
+        - alice
+        - bob
+      solita_jenkins_absent_users:
+        - eve
+      roles:
+         - solita.jenkins
+
+.. highlight:: groovy
+
+::
+
+    // job-dsl/main.groovy
+    job('DSL-Tutorial-1-Test') {
+        scm {
+            git('git://github.com/jgritman/aws-sdk-test.git')
+        }
+        triggers {
+            scm('*/15 * * * *')
+        }
+        steps {
+            maven('-e clean test')
+        }
+    }
 
 ------------
 Installation
@@ -21,16 +61,6 @@ Installation
 You can install this role and its dependencies with ansible-galaxy_::
 
     ansible-galaxy install -p path/to/your/roles https://github.com/solita/ansible-role-solita.jenkins.git
-
-.. highlight:: yaml
-
-Once installed, you should be able to use the role in your playbooks::
-
-    # playbook.yml
-    ---
-    - hosts: servers
-      roles:
-         - solita.jenkins
 
 -------
 Plugins
