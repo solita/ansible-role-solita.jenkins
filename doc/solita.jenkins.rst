@@ -4,7 +4,7 @@ solita.jenkins
 
 A Jenkins installation completely configured with Ansible. This role builds on top of geerlingguy.jenkins_, adding support for configuring Jenkins and defining jobs and views with a `Job DSL`_ script.
 
-This role is tested on Ubuntu 14.04 LTS (Trusty Thar), but it should work on all operating systems supported by geerlingguy.jenkins_.
+This role is tested on Ubuntu 14.04 LTS (Trusty Thar), but it should work on all operating systems supported by `the upstream role`_.
 
 In its default settings, this role does not change Jenkins' configuration in any way, so it is safe to run on a server with an existing Jenkins installation.
 
@@ -36,11 +36,11 @@ Once installed, you should be able to use the role in your playbooks::
 Plugins
 -------
 
-To add plugins to your Jenkins installation, list their plugin IDs in the variable ``solita_jenkins_plugins``. You can find a plugin's plugin ID on its `wiki page <https://wiki.jenkins-ci.org/display/JENKINS/Plugins>`_.
+To add plugins to your Jenkins installation, list their plugin IDs in the variable ``solita_jenkins_plugins``. You can find a plugin's ID on its `wiki page <https://wiki.jenkins-ci.org/display/JENKINS/Plugins>`_.
 
 .. note ::
 
-    This role depends on the the `Job DSL plugin`_ and always installs it.
+    This role depends on the `Job DSL plugin`_ and always installs it.
 
 Examples
 ========
@@ -169,6 +169,7 @@ Only update jobs and views::
     ansible-playbook -i environments/vagrant/inventory playbook.yml --tags solita_jenkins_jobs
 
 .. _geerlingguy.jenkins: https://galaxy.ansible.com/detail#/role/440
+.. _the upstream role: geerlingguy.jenkins_
 .. _ansible-galaxy: http://docs.ansible.com/ansible/galaxy.html#the-ansible-galaxy-command-line-tool
 .. _Job DSL: https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin
 .. _Job DSL plugin: `Job DSL`_
