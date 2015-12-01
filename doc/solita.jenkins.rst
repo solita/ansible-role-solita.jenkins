@@ -23,15 +23,16 @@ With this role and the `Job DSL plugin`_, your entire Jenkins configuration can 
     # playbook.yml
     ---
     - hosts: servers
-      solita_jenkins_plugins:
-        - timestamper
-        - git
-      solita_jenkins_security_realm: jenkins
-      solita_jenkins_users:
-        - alice
-        - bob
-      solita_jenkins_absent_users:
-        - eve
+      vars:
+        solita_jenkins_plugins:
+          - timestamper
+          - git
+        solita_jenkins_security_realm: jenkins
+        solita_jenkins_users:
+          - alice
+          - bob
+        solita_jenkins_absent_users:
+          - eve
       roles:
          - solita.jenkins
 
