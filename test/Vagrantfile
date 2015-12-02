@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = 'ubuntu/trusty64'
+
+  config.vm.synced_folder "..", "/solita.jenkins"
+
+  config.vm.provision 'shell', privileged: false, inline: <<-EOF
+    set -e
+
+    # Install pip
+    sudo apt-get update
+    sudo apt-get install -y python-setuptools python-dev libffi-dev libssl-dev
+    sudo easy_install pip
+
+    # Fix InsecurePlatformWarning in the OS's pip (this will show the
+    # InsecurePlatformWarning once)
+    sudo -H pip install --upgrade requests[security]
+
+    # Install virtualenv
+    sudo -H pip install virtualenv
+
+    # Create a new virtual environment for Ansible 1.9
+    virtualenv ~/ansible-1.9-env
+    source ~/ansible-1.9-env/bin/activate
+
+    # Fix InsecurePlatformWarning in the virtual environment's pip (this will
+    # show the InsecurePlatformWarning once)
+    pip install --upgrade requests[security]
+
+    # Install Ansible 1.9.4 in the virtual environment
+    pip install ansible==1.9.4
+
+    # Activate the Ansible 1.9 environment on login
+    echo 'source ~/ansible-1.9-env/bin/activate' >> ~/.profile
+
+    # Start new login shells in the /solita.jenkins/test directory
+    echo 'cd /solita.jenkins/test' >> ~/.profile
+
+    cd /solita.jenkins/test
+    bash install-dependencies.sh
+  EOF
+end
