@@ -130,7 +130,7 @@ galaxy_info:
   #- system
   #- web
 dependencies:
-  - role: geerlingguy.jenkins
+  - role: https://github.com/noidi/ansible-role-jenkins.git,1.2.5-solita-patch1,geerlingguy.jenkins
     sudo: yes
   # List your role dependencies here, one per line. Only
   # dependencies available via galaxy should be listed here.
