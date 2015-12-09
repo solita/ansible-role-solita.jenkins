@@ -14,9 +14,6 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y python-setuptools python-dev libffi-dev libssl-dev
     sudo easy_install pip
 
-    # Install git
-    sudo apt-get install git
-
     # Fix InsecurePlatformWarning in the OS's pip (this will show the
     # InsecurePlatformWarning once)
     sudo -H pip install --upgrade requests[security]
