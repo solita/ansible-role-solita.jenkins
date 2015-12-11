@@ -3,18 +3,18 @@
   user: name={{ ansible_user_id }} generate_ssh_key=yes
 
 - name: Configure Jenkins security realm
-  tags: solita_jenkins_users
+  tags: solita_jenkins_security
   solita_jenkins_security_realm: realm={{ solita_jenkins_security_realm }} admin_password={{ lookup('password', inventory_dir + '/default_passwords/solita_jenkins') }}
   when: solita_jenkins_security_realm is defined
 
 - name: Add present Jenkins users
-  tags: solita_jenkins_users
+  tags: solita_jenkins_security
   solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/default_passwords/' + item) }} state=present
   with_items: "{{ solita_jenkins_users }}"
   when: (solita_jenkins_security_realm | default(None)) == 'jenkins'
 
 - name: Remove absent Jenkins users
-  tags: solita_jenkins_users
+  tags: solita_jenkins_security
   solita_jenkins_user: name={{ item }} state=absent
   with_items: "{{ solita_jenkins_absent_users }}"
   when: (solita_jenkins_security_realm | default(None)) == 'jenkins'

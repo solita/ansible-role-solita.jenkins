@@ -1,0 +1,43 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    domain_name (0.5.25)
+      unf (>= 0.0.5, < 1.0.0)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
+    mechanize (2.7.3)
+      domain_name (~> 0.5, >= 0.5.1)
+      http-cookie (~> 1.0)
+      mime-types (~> 2.0)
+      net-http-digest_auth (~> 1.1, >= 1.1.1)
+      net-http-persistent (~> 2.5, >= 2.5.2)
+      nokogiri (~> 1.4)
+      ntlm-http (~> 0.1, >= 0.1.1)
+      webrobots (>= 0.0.9, < 0.2)
+    mime-types (2.99)
+    mini_portile2 (2.0.0)
+    minitest (5.8.3)
+    minitest-focus (1.1.2)
+      minitest (>= 4, < 6)
+    net-http-digest_auth (1.4)
+    net-http-persistent (2.9.4)
+    nokogiri (1.6.7)
+      mini_portile2 (~> 2.0.0.rc2)
+    ntlm-http (0.1.1)
+    rake (10.4.2)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.1)
+    webrobots (0.1.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  mechanize
+  minitest
+  minitest-focus
+  rake
+
+BUNDLED WITH
+   1.10.6

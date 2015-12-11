@@ -1,3 +1,4 @@
 *.swp
 *.swo
 .cs_files
+test/environments/vagrant/default_passwords

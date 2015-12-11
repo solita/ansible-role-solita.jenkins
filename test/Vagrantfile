@@ -5,6 +5,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = 'ubuntu/trusty64'
 
   config.vm.synced_folder "..", "/solita.jenkins"
+  config.vm.network :forwarded_port, guest: 8080, host: 9080
 
   config.vm.provision 'shell', privileged: false, inline: <<-EOF
     set -e
@@ -41,5 +42,9 @@ Vagrant.configure(2) do |config|
     # Install role dependencies
     cd /solita.jenkins/test
     bash install-dependencies.sh
+
+    # Perform a basic installation of the role (assumed by the tests)
+    export PYTHONUNBUFFERED=1
+    ansible-playbook -i environments/vagrant/inventory site.yml
   EOF
 end
