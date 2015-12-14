@@ -15,7 +15,7 @@ module TestHelper
     s.gsub(/^#{indent}/, '')
   end
 
-  def ansible_playbook(args, contents)
+  def ansible_playbook(args, contents, options = {})
     p = Tempfile.new('playbook.yml', '.')
     begin
       p.write(unindent(contents))
@@ -24,9 +24,11 @@ module TestHelper
       stdout, stderr, status = Open3.capture3("ansible-playbook -i environments/vagrant/inventory #{args} #{p.path}")
 
       unless status.success? then
-        puts stdout
-        puts stderr
-        flunk('ansible-playbook failed!')
+        unless options[:silent] then
+          puts stdout
+          puts stderr
+        end
+        fail 'ansible-playbook failed!'
       end
     ensure
       p.unlink

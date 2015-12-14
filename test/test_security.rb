@@ -72,6 +72,22 @@ class TestSecurity < Minitest::Test
     assert_forbidden { open_dashboard }
   end
 
+  # It's an error to use user variables when solita_jenkins_security_realm is
+  # not jenkins.
+  def test_users_with_wrong_security_realm
+    assert_raises do
+      ansible_playbook '--tags solita_jenkins_security', <<-EOF
+      ---
+      - hosts: vagrant
+        vars:
+          solita_jenkins_users:
+            - foo
+        roles:
+          - solita.jenkins
+      EOF
+    end
+  end
+
   # Users listed in solita_jenkins_users are added if they are missing.
   # Unlisted users are not modified.
   def test_add_users

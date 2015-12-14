@@ -7,17 +7,23 @@
   solita_jenkins_security_realm: realm={{ solita_jenkins_security_realm }} admin_password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/solita_jenkins') }}
   when: solita_jenkins_security_realm is defined
 
+- name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
+  tags: solita_jenkins_security
+  fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
+  when: ({{ item }} | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
+  with_items:
+    - solita_jenkins_users
+    - solita_jenkins_absent_users
+
 - name: Add present Jenkins users
   tags: solita_jenkins_security
   solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/' + item) }} state=present
   with_items: "{{ solita_jenkins_users }}"
-  when: (solita_jenkins_security_realm | default(None)) == 'jenkins'
 
 - name: Remove absent Jenkins users
   tags: solita_jenkins_security
   solita_jenkins_user: name={{ item }} state=absent
   with_items: "{{ solita_jenkins_absent_users }}"
-  when: (solita_jenkins_security_realm | default(None)) == 'jenkins'
 
 - name: Create the job-dsl job
   shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ create-job job-dsl < '{{ role_path }}/files/job-dsl-config.xml'
