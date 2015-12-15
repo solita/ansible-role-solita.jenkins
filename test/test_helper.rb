@@ -3,6 +3,7 @@ gem 'minitest'
 require 'minitest/autorun'
 require 'minitest/focus'
 require 'mechanize'
+require 'fileutils'
 
 module TestHelper
 
@@ -17,21 +18,28 @@ module TestHelper
 
   def ansible_playbook(args, contents, options = {})
     p = Tempfile.new('playbook.yml', '.')
+    FileUtils::mkdir_p('job-dsl')
+    m = File.new('job-dsl/main.groovy', 'w')
     begin
       p.write(unindent(contents))
       p.close
 
-      stdout, stderr, status = Open3.capture3("ansible-playbook -i environments/vagrant/inventory #{args} #{p.path}")
+      m.write(unindent(options[:job_dsl] || ""))
+      m.close
+
+      stdout, stderr, status = Open3.capture3("ansible-playbook -v -i environments/vagrant/inventory #{args} #{p.path}")
+      puts stdout if options[:verbose]
 
       unless status.success? then
         unless options[:silent] then
-          puts stdout
+          puts stdout unless options[:verbose]
           puts stderr
         end
         fail 'ansible-playbook failed!'
       end
     ensure
       p.unlink
+      File::unlink(m)
     end
   end
 
@@ -66,6 +74,14 @@ module TestHelper
       .map { |n| n.text }\
       .to_set\
       .delete('solita_jenkins')
+  end
+
+  def list_jobs
+    @agent.get('http://localhost:8080')\
+      .search('table#projectstatus>tr>td:nth-child(3)')\
+      .map { |n| n.text }\
+      .to_set\
+      .delete('job-dsl')
   end
 
 end

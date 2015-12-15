@@ -49,18 +49,30 @@
     path: /var/lib/jenkins/jobs/job-dsl/workspace
     state: directory
 
-- name: Update the Job DSL scripts
-  tags: solita_jenkins_job_dsl
+# The default workspace location seems to have changed.
+- name: Update the Job DSL scripts (old workspace location)
+  tags: solita_jenkins_jobs
   sudo: yes
   sudo_user: jenkins
   copy:
     src: "{{ item }}"
     dest: /var/lib/jenkins/jobs/job-dsl/workspace
   with_fileglob:
-    - "{{ playbook_dir }}/job_dsl/*.groovy"
-  register: update_job_dsl_scripts
+    - "{{ playbook_dir }}/job-dsl/*.groovy"
+  register: update_job_dsl_scripts_old
+
+- name: Update the Job DSL scripts (new workspace location)
+  tags: solita_jenkins_jobs
+  sudo: yes
+  sudo_user: jenkins
+  copy:
+    src: "{{ item }}"
+    dest: /var/lib/jenkins/workspace/job-dsl
+  with_fileglob:
+    - "{{ playbook_dir }}/job-dsl/*.groovy"
+  register: update_job_dsl_scripts_new
 
 - name: Run the Job DSL scripts
-  tags: solita_jenkins_job_dsl
+  tags: solita_jenkins_jobs
   shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ build job-dsl -s -v
-  when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts | changed)
+  when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts_old | changed) or (update_job_dsl_scripts_new | changed)
