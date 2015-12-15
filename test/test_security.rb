@@ -76,7 +76,7 @@ class TestSecurity < Minitest::Test
   # not jenkins.
   def test_users_with_wrong_security_realm
     assert_raises do
-      ansible_playbook '--tags solita_jenkins_security', <<-EOF
+      ansible_playbook '--tags solita_jenkins_security', <<-EOF, :silent => true
       ---
       - hosts: vagrant
         vars:
