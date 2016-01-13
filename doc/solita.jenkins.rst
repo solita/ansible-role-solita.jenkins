@@ -92,6 +92,8 @@ Install the ``timestamper`` and ``git`` plugins:
       roles:
          - solita.jenkins
 
+.. _solita.jenkins_security:
+
 --------
 Security
 --------
