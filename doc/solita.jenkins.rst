@@ -113,6 +113,10 @@ To add and remove users, add their usernames to the lists ``solita_jenkins_users
 
     User management is only available when ``solita_security_realm`` is set to ``'jenkins'``.
 
+.. note ::
+
+    Currently only administrator users are supported.
+
 When a new user is created, the user's default password will be read from the file ``solita_jenkins_default_password/<username>`` in the inventory directory. If the file does not exist, a file containing a random password is created. For example, if your inventory file is ``environments/vagrant/inventory`` and you add the user ``alice``, you can find their default password in the file ``environments/vagrant/solita_jenkins_default_password/alice``.
 
 To limit role application to security settings and user management, use the tag ``solita_jenkins_security``.
