@@ -113,7 +113,7 @@ To add and remove users, add their usernames to the lists ``solita_jenkins_users
 
 .. note ::
 
-    User management is only available when ``solita_security_realm`` is set to ``'jenkins'``.
+    User management is only available when ``solita_jenkins_security_realm`` is set to ``'jenkins'``.
 
 .. note ::
 
