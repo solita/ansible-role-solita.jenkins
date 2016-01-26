@@ -46,8 +46,11 @@
   sudo: yes
   sudo_user: jenkins
   file:
-    path: /var/lib/jenkins/jobs/job-dsl/workspace
+    path: "{{ item }}"
     state: directory
+  with_items:
+  - /var/lib/jenkins/jobs/job-dsl/workspace
+  - /var/lib/jenkins/workspace/job-dsl
 
 # The default workspace location seems to have changed.
 - name: Update the Job DSL scripts (old workspace location)
