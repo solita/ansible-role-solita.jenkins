@@ -25,8 +25,13 @@
   solita_jenkins_user: name={{ item }} state=absent
   with_items: "{{ solita_jenkins_absent_users }}"
 
+- name: copy job-dsl-config.xml to destination
+  sudo: yes
+  sudo_user: jenkins
+  copy: src={{ role_path }}/files/job-dsl-config.xml dest=/var/lib/jenkins/job-dsl-config.xml
+
 - name: Create the job-dsl job
-  shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ create-job job-dsl < '{{ role_path }}/files/job-dsl-config.xml'
+  shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ create-job job-dsl < '/var/lib/jenkins/job-dsl-config.xml'
   args:
     creates: /var/lib/jenkins/jobs/job-dsl/config.xml
 
