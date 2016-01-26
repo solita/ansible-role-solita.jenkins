@@ -26,7 +26,7 @@
   with_items: "{{ solita_jenkins_absent_users }}"
 
 - name: Create the job-dsl job
-  shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ create-job job-dsl < '{{ role_path }}/files/job-dsl-config.xml'
+  shell: java -jar /opt/jenkins-cli.jar -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ create-job job-dsl < '{{ role_path }}/files/job-dsl-config.xml'
   args:
     creates: /var/lib/jenkins/jobs/job-dsl/config.xml
 
@@ -39,7 +39,7 @@
   register: update_job_dsl_job
 
 - name: Reload the job-dsl job
-  command: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ reload-job job-dsl
+  command: java -jar /opt/jenkins-cli.jar -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ reload-job job-dsl
   when: update_job_dsl_job | changed
 
 - name: Create the job-dsl workspace
@@ -77,5 +77,5 @@
 
 - name: Run the Job DSL scripts
   tags: solita_jenkins_jobs
-  shell: java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ build job-dsl -s -v
+  shell: java -jar /opt/jenkins-cli.jar -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ build job-dsl -s -v
   when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts_old | changed) or (update_job_dsl_scripts_new | changed)
