@@ -4,7 +4,7 @@ class TestJobs < Minitest::Test
 
   include TestHelper
 
-  # Jobs are created/modified/deleted to match job-dsl/main.groovy.
+  # Jobs are created/modified/deleted to match jobs/main.groovy.
   def test_jobs
     # Disable security.
     ansible_playbook '--tags solita_jenkins_security', <<-EOF
