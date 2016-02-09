@@ -18,8 +18,8 @@ module TestHelper
 
   def ansible_playbook(args, contents, options = {})
     p = Tempfile.new('playbook.yml', '.')
-    FileUtils::mkdir_p('job-dsl')
-    m = File.new('job-dsl/main.groovy', 'w')
+    FileUtils::mkdir_p('jobs')
+    m = File.new('jobs/main.groovy', 'w')
     begin
       p.write(unindent(contents))
       p.close
