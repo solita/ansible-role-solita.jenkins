@@ -4,7 +4,7 @@ class TestJobs < Minitest::Test
 
   include TestHelper
 
-  # Jobs are created/modified/deleted to match job-dsl/main.groovy.
+  # Jobs are created/modified/deleted to match jobs/Main.groovy.
   def test_jobs
     # Disable security.
     ansible_playbook '--tags solita_jenkins_security', <<-EOF
@@ -17,7 +17,7 @@ class TestJobs < Minitest::Test
     EOF
     # Configure Jenkins with only one, randomly named, job.
     job_name = (0...8).map { (65 + rand(26)).chr }.join
-    ansible_playbook '--tags solita_jenkins_jobs', <<-EOF, :job_dsl => <<-EOF2
+    ansible_playbook '--tags solita_jenkins_jobs', <<-EOF, :jobs => <<-EOF2
     ---
     - hosts: vagrant
       roles:

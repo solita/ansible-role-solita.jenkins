@@ -40,7 +40,7 @@ With this role and the `Job DSL plugin`_, your entire Jenkins configuration can 
 
 ::
 
-    // job-dsl/main.groovy
+    // jobs/Main.groovy
     job('DSL-Tutorial-1-Test') {
         scm {
             git('git://github.com/jgritman/aws-sdk-test.git')
@@ -163,7 +163,7 @@ Only update security settings and users::
 Jobs and Views
 --------------
 
-You can define jobs and views with a `Job DSL`_ script. The role looks for scripts in the directory ``job-dsl`` next to your playbook and runs the script called ``main.groovy``, which can import the other scripts in the directory.
+You can define jobs and views with a `Job DSL`_ script. The role looks for scripts in the directory ``jobs`` next to your playbook and runs the script called ``Main.groovy``, which can import the other scripts in the directory.
 
 To change the Job DSL script directory, set the variable ``solita_jenkins_job_dsl_dir``.
 
@@ -176,7 +176,7 @@ Examples
 
 If you create your script in the default location, no configuration is needed::
 
-    // job-dsl/main.groovy
+    // jobs/Main.groovy
     job('my-new-job') {
         // ...
     }
