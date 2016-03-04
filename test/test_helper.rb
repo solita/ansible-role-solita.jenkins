@@ -17,17 +17,20 @@ module TestHelper
   end
 
   def ansible_playbook(args, contents, options = {})
-    p = Tempfile.new('playbook.yml', '.')
-    FileUtils::mkdir_p('jobs')
-    m = File.new('jobs/Main.groovy', 'w')
+    playbook_yml = Tempfile.new('playbook.yml', '.')
+    job_files = []
     begin
-      p.write(unindent(contents))
-      p.close
+      playbook_yml.write(unindent(contents))
+      playbook_yml.close
 
-      m.write(unindent(options[:jobs] || ""))
-      m.close
+      (options[:jobs] || {}).each do |k, v|
+        f = File.new("jobs/#{k}", 'w')
+        job_files.push f
+        f.write(unindent(v))
+        f.close
+      end
 
-      stdout, stderr, status = Open3.capture3("ansible-playbook -v -i environments/vagrant/inventory #{args} #{p.path}")
+      stdout, stderr, status = Open3.capture3("ansible-playbook -v -i environments/vagrant/inventory #{args} #{playbook_yml.path}")
       puts stdout if options[:verbose]
 
       unless status.success? then
@@ -38,8 +41,8 @@ module TestHelper
         fail 'ansible-playbook failed!'
       end
     ensure
-      p.unlink
-      File::unlink(m)
+      job_files.each {|f| File::unlink(f)}
+      playbook_yml.unlink
     end
   end
 

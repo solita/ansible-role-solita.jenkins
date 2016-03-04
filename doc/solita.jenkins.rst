@@ -163,7 +163,7 @@ Only update security settings and users::
 Jobs and Views
 --------------
 
-You can define jobs and views with a `Job DSL`_ script. The role looks for scripts in the directory ``jobs`` next to your playbook and runs the script called ``Main.groovy``, which can import the other scripts in the directory.
+You can define jobs and views with a `Job DSL`_ script. The role expects your Job DSL scripts to be stored in files ending with ``.groovy`` in the ``jobs`` directory next to your playbook.
 
 To change the Job DSL script directory, set the variable ``solita_jenkins_job_dsl_dir``.
 
