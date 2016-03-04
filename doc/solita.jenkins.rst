@@ -163,7 +163,7 @@ Only update security settings and users::
 Jobs and Views
 --------------
 
-You can define jobs and views with a `Job DSL`_ script. The role expects your Job DSL scripts to be stored in files ending with ``.groovy`` in the ``jobs`` directory next to your playbook.
+You can define jobs and views with a `Job DSL`_ script. The role expects your Job DSL scripts to be stored in files ending with ``.groovy`` in the ``jobs`` directory next to your playbook. If you want to use `Ansible variables`_ in your script, you can turn the script file into a `Jinja2 template`_ by changing its filename to end with ``.groovy.j2``.
 
 To change the Job DSL script directory, set the variable ``solita_jenkins_jobs_dir``.
 
@@ -191,6 +191,15 @@ If you create your script in the default location, no configuration is needed::
       roles:
          - solita.jenkins
 
+.. highlight:: groovy
+
+If the script's filename ends in ``.groovy.j2``, it can contain Ansible variables::
+
+    // jobs/Main.groovy.j2
+    job('{{ job_name | default("foo") }}') {
+        // ...
+    }
+
 .. highlight:: yaml
 
 If you want to place your scripts somewhere else, set the variable ``solita_jenkins_jobs_dir``::
@@ -214,3 +223,5 @@ Only update jobs and views::
 .. _ansible-galaxy: http://docs.ansible.com/ansible/galaxy.html#the-ansible-galaxy-command-line-tool
 .. _Job DSL: https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin
 .. _Job DSL plugin: `Job DSL`_
+.. _Ansible variables: http://docs.ansible.com/ansible/playbooks_variables.html
+.. _Jinja2 template: http://docs.ansible.com/ansible/playbooks_variables.html#using-variables-about-jinja2

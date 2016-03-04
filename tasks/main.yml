@@ -64,7 +64,23 @@
     delete: yes
   register: update_job_dsl_scripts
 
+- name: Find Job DSL script templates
+  set_fact:
+    job_dsl_templates: "{{ lookup('pipe', 'find \\'' + solita_jenkins_jobs_dir + '/\\' -type f -name \\'*.groovy.j2\\'').split('\n') }}"
+  tags: solita_jenkins_jobs
+
+- name: Update the Job DSL script templates
+  tags: solita_jenkins_jobs
+  sudo: yes
+  sudo_user: jenkins
+  template:
+    src: "{{ item }}"
+    dest: /var/lib/jenkins/jobs/job-dsl/workspace/{{ item | regex_replace('^' + solita_jenkins_jobs_dir + '/', '') | regex_replace('\.j2$', '') }}
+  with_items: "{{ job_dsl_templates }}"
+  when: job_dsl_templates != [""]
+  register: update_job_dsl_script_templates
+
 - name: Run the Job DSL scripts
   tags: solita_jenkins_jobs
   shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ build job-dsl -s -v
-  when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts | changed)
+  when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts | changed) or (update_job_dsl_script_templates | changed)
