@@ -24,7 +24,7 @@ module TestHelper
       playbook_yml.close
 
       (options[:jobs] || {}).each do |k, v|
-        f = File.new("jobs/#{k}", 'w')
+        f = File.new(k, 'w')
         job_files.push f
         f.write(unindent(v))
         f.close

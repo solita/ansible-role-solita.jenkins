@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'fileutils'
 
 class TestJobs < Minitest::Test
 
@@ -17,7 +18,7 @@ class TestJobs < Minitest::Test
     EOF
     # Configure Jenkins with only one, randomly named, job.
     job_name = (0...8).map { (65 + rand(26)).chr }.join
-    ansible_playbook '--tags solita_jenkins_jobs', <<-EOF, :jobs => { "Main.groovy" => <<-EOF2 }
+    ansible_playbook '--tags solita_jenkins_jobs', <<-EOF, :jobs => { "jobs/Main.groovy" => <<-EOF2 }
     ---
     - hosts: vagrant
       roles:
@@ -30,7 +31,7 @@ class TestJobs < Minitest::Test
     assert_equal [job_name].to_set, list_jobs
   end
 
-  # Jobs are read from all Groovy files.
+  # Jobs are read from all Groovy files in solita_job_dsl_dir.
   def test_multiple_groovy_files
     # Disable security.
     ansible_playbook '--tags solita_jenkins_security', <<-EOF
@@ -41,8 +42,9 @@ class TestJobs < Minitest::Test
       roles:
         - solita.jenkins
     EOF
-    # Create jobs from two Groovy files.
-    ansible_playbook '--tags solita_jenkins_jobs', <<-EOF, :jobs => { "First.groovy" => <<-EOF2, "Second.groovy" => <<-EOF3 }
+    # Create jobs from two Groovy files in /tmp/jobdsl.
+    FileUtils::mkdir_p('/tmp/jobdsl')
+    ansible_playbook '--tags solita_jenkins_jobs -e solita_jenkins_jobs_dir=/tmp/jobdsl', <<-EOF, :jobs => { "/tmp/jobdsl/First.groovy" => <<-EOF2, "/tmp/jobdsl/Second.groovy" => <<-EOF3 }
     ---
     - hosts: vagrant
       roles:

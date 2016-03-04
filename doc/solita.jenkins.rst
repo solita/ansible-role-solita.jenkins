@@ -165,7 +165,7 @@ Jobs and Views
 
 You can define jobs and views with a `Job DSL`_ script. The role expects your Job DSL scripts to be stored in files ending with ``.groovy`` in the ``jobs`` directory next to your playbook.
 
-To change the Job DSL script directory, set the variable ``solita_jenkins_job_dsl_dir``.
+To change the Job DSL script directory, set the variable ``solita_jenkins_jobs_dir``.
 
 To limit role application to job and view updates, use the tag ``solita_jenkins_jobs``.
 
@@ -193,13 +193,13 @@ If you create your script in the default location, no configuration is needed::
 
 .. highlight:: yaml
 
-If you want to place your scripts somewhere else, set the variable ``solita_jenkins_job_dsl_dir``::
+If you want to place your scripts somewhere else, set the variable ``solita_jenkins_jobs_dir``::
 
     # playbook.yml
     ---
     - hosts: servers
       vars:
-        solita_jenkins_job_dsl_dir: "{{ playbook_dir }}/files/jenkins/jobs"
+        solita_jenkins_jobs_dir: "{{ playbook_dir }}/files/jenkins/jobs"
       roles:
          - solita.jenkins
 

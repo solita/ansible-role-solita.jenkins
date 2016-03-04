@@ -59,7 +59,7 @@
   sudo: yes
   sudo_user: jenkins
   synchronize:
-    src: "{{ playbook_dir }}/jobs/"
+    src: "{{ solita_jenkins_jobs_dir }}/"
     dest: /var/lib/jenkins/jobs/job-dsl/workspace/
     delete: yes
   register: update_job_dsl_scripts
