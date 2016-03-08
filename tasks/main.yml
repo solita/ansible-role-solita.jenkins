@@ -26,8 +26,8 @@
   with_items: "{{ solita_jenkins_absent_users }}"
 
 - name: copy job-dsl-config.xml to destination
-  sudo: yes
-  sudo_user: jenkins
+  become: yes
+  become_user: jenkins
   copy: src={{ role_path }}/files/job-dsl-config.xml dest=/var/lib/jenkins/job-dsl-config.xml
 
 - name: Create the job-dsl job
@@ -36,8 +36,8 @@
     creates: /var/lib/jenkins/jobs/job-dsl/config.xml
 
 - name: Update the job-dsl job configuration
-  sudo: yes
-  sudo_user: jenkins
+  become: yes
+  become_user: jenkins
   copy:
     src: job-dsl-config.xml
     dest: /var/lib/jenkins/jobs/job-dsl/config.xml
@@ -47,40 +47,37 @@
   command: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ reload-job job-dsl
   when: update_job_dsl_job | changed
 
-- name: Create the job-dsl workspace
-  sudo: yes
-  sudo_user: jenkins
+- name: Remove the old job-dsl workspace
+  tags: solita_jenkins_jobs
+  become: yes
   file:
     path: /var/lib/jenkins/jobs/job-dsl/workspace
-    state: directory
+    state: absent
 
-- name: Update the Job DSL scripts
+- name: Copy the Job DSL scripts to the job-dsl workspace
   tags: solita_jenkins_jobs
-  sudo: yes
-  sudo_user: jenkins
-  synchronize:
+  become: yes
+  become_user: jenkins
+  copy:
     src: "{{ solita_jenkins_jobs_dir }}/"
-    dest: /var/lib/jenkins/jobs/job-dsl/workspace/
-    delete: yes
-  register: update_job_dsl_scripts
+    dest: /var/lib/jenkins/jobs/job-dsl/workspace
 
-- name: Find Job DSL script templates
-  set_fact:
-    job_dsl_templates: "{{ lookup('pipe', 'find \\'' + solita_jenkins_jobs_dir + '/\\' -type f -name \\'*.groovy.j2\\'').split('\n') }}"
+- name: Find the local Job DSL script templates
   tags: solita_jenkins_jobs
+  command: "find '{{ solita_jenkins_jobs_dir }}' -type f -name '*.groovy.j2'"
+  delegate_to: localhost
+  register: find_script_templates
 
-- name: Update the Job DSL script templates
+- name: Copy the Job DSL script templates to the job-dsl workspace
   tags: solita_jenkins_jobs
-  sudo: yes
-  sudo_user: jenkins
+  become: yes
+  become_user: jenkins
   template:
     src: "{{ item }}"
-    dest: /var/lib/jenkins/jobs/job-dsl/workspace/{{ item | regex_replace('^' + solita_jenkins_jobs_dir + '/', '') | regex_replace('\.j2$', '') }}
-  with_items: "{{ job_dsl_templates }}"
-  when: job_dsl_templates != [""]
-  register: update_job_dsl_script_templates
+    dest: /var/lib/jenkins/jobs/job-dsl/workspace/{{ item | regex_replace('^' + solita_jenkins_jobs_dir + '/?', '') | regex_replace('\.j2$', '') }}
+  with_items: "{{ find_script_templates.stdout_lines }}"
+  when: find_script_templates.stdout_lines != []
 
 - name: Run the Job DSL scripts
   tags: solita_jenkins_jobs
   shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ build job-dsl -s -v
-  when: (update_job_dsl_job is not defined) or (update_job_dsl_job | changed) or (update_job_dsl_scripts | changed) or (update_job_dsl_script_templates | changed)
