@@ -11,8 +11,9 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
+  <customWorkspace>/var/lib/jenkins/jobs/job-dsl/workspace</customWorkspace>
   <builders>
-    <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.40">
+    <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.45">
       <targets>*.groovy</targets>
       <usingScriptText>false</usingScriptText>
       <ignoreExisting>false</ignoreExisting>
