@@ -57,11 +57,23 @@ With this role and the `Job DSL plugin`_, your entire Jenkins configuration can 
 Installation
 ------------
 
+.. highlight:: yaml
+
+You can install this role and its dependencies with ansible-galaxy_. First add the following lines to your ``requirements.yml``:
+
+.. code-block:: yaml
+   :emphasize-lines: 3-4
+
+    # requirements.yml
+    ---
+    - src: https://github.com/solita/ansible-role-solita.jenkins.git
+      name: solita.jenkins
+
 .. highlight:: sh
 
-You can install this role and its dependencies with ansible-galaxy_::
+Then run ``ansible-galaxy`` to install the plugin::
 
-    ansible-galaxy install -p path/to/your/roles https://github.com/solita/ansible-role-solita.jenkins.git
+    ansible-galaxy install -p path/to/your/roles -r requirements.yml
 
 -------
 Plugins
