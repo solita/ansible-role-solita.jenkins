@@ -1,5 +1,17 @@
 ---
 - hosts: vagrant
+
+  pre_tasks:
+    # Work around https://github.com/geerlingguy/ansible-role-jenkins/issues/47
+    - name: Fetch Jenkins 1.658
+      get_url:
+        url: http://pkg.jenkins-ci.org/debian/binary/jenkins_1.658_all.deb
+        dest: /tmp/jenkins_1.658_all.deb
+
+    - name: Install Jenkins 1.658
+      apt: deb=/tmp/jenkins_1.658_all.deb
+      become: yes
+
   # The unit tests expect that a basic installation is present, because they
   # limit the role application to the part they're testing with tags.
   roles:
