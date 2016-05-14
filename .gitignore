@@ -1,0 +1,4 @@
+*.swp
+*.swo
+.cs_files
+test/environments/vagrant/solita_jenkins_default_password

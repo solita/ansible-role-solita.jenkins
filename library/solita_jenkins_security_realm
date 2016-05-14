@@ -1,0 +1,74 @@
+#!/usr/bin/python
+SCRIPT="""
+import groovy.json.*
+import jenkins.model.*
+import hudson.security.*
+import org.jenkinsci.main.modules.cli.auth.ssh.UserPropertyImpl
+
+jsonSlurper = new JsonSlurper()
+def params = jsonSlurper.parseText('%s')
+
+result = [
+    changed: false
+]
+
+def jenkins = Jenkins.getInstance()
+def currentSecurityRealm = jenkins.getSecurityRealm()
+
+if (params.realm == 'jenkins') {
+    if (!(currentSecurityRealm instanceof HudsonPrivateSecurityRealm)) {
+        def newSecurityRealm = new HudsonPrivateSecurityRealm(false)
+        jenkins.setSecurityRealm(newSecurityRealm)
+
+        def strategy = new GlobalMatrixAuthorizationStrategy()
+        strategy.add(Jenkins.ADMINISTER, 'solita_jenkins')
+        jenkins.setAuthorizationStrategy(strategy)
+
+        def user = newSecurityRealm.createAccount('solita_jenkins', params.admin_password)
+        user.addProperty(new UserPropertyImpl(params.public_key));
+        user.save()
+
+        jenkins.save()
+        result.changed = true
+    }
+} else if (params.realm == 'none') {
+    if (!currentSecurityRealm.is(SecurityRealm.NO_AUTHENTICATION)) {
+        // If we leave the user, further attempts to use jenkins-cli.jar with
+        // key-based authentication enabled fail for some reason. Clearing the
+        // user's SSH key wasn't enough to solve the problem.
+        jenkins.getUser('solita_jenkins').delete()
+
+        jenkins.disableSecurity()
+
+        jenkins.save()
+        result.changed = true
+    }
+}
+
+println JsonOutput.toJson(result)
+"""
+
+import json
+import os.path
+
+def main():
+    module = AnsibleModule(
+        argument_spec = dict(
+            realm=dict(required=True, choices=['jenkins', 'none']),
+            admin_password=dict(type='str')
+        )
+    )
+
+    with open(os.path.expanduser('~/.ssh/id_rsa.pub')) as f:
+        module.params['public_key'] = f.read()
+
+    rc, stdout, stderr = module.run_command("java -jar /opt/jenkins-cli.jar -s 'http://localhost:8080' groovy =",
+                                            data=(SCRIPT % json.dumps(module.params)))
+    if (rc != 0):
+        module.fail_json(msg=stderr)
+
+    print stdout
+
+from ansible.module_utils.basic import *
+if __name__ == '__main__':
+    main()

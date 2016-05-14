@@ -1,0 +1,67 @@
+#!/usr/bin/python
+SCRIPT="""
+import groovy.json.*
+import jenkins.model.*
+import hudson.security.*
+import org.jenkinsci.main.modules.cli.auth.ssh.UserPropertyImpl
+
+jsonSlurper = new JsonSlurper()
+def params = jsonSlurper.parseText('%s')
+
+result = [
+    changed: false
+]
+
+def jenkins = Jenkins.getInstance()
+def securityRealm = jenkins.getSecurityRealm()
+def authorizationStrategy = jenkins.getAuthorizationStrategy()
+
+if (!(securityRealm instanceof HudsonPrivateSecurityRealm)) {
+    throw new RuntimeException('solita_jenkins_user requires solita_jenkins_security_realm: realm=jenkins')
+}
+
+def currentUsers = securityRealm.getAllUsers().collect { it.getId() }
+
+if (params.state == 'present') {
+    if (!(params.name in currentUsers)) {
+        user = securityRealm.createAccount(params.name, params.password)
+        user.save()
+
+        authorizationStrategy.add(Jenkins.ADMINISTER, params.name)
+        jenkins.save()
+
+        result.changed = true
+    }
+} else {
+    if (params.name in currentUsers) {
+        user = securityRealm.getUser(params.name)
+        user.delete()
+
+        result.changed = true
+    }
+}
+
+println JsonOutput.toJson(result)
+"""
+
+import json
+
+def main():
+    module = AnsibleModule(
+        argument_spec = dict(
+            name=dict(type='str', required=True),
+            state=dict(choices=['present', 'absent'], default='present'),
+            password=dict(type='str')
+        )
+    )
+
+    rc, stdout, stderr = module.run_command("java -jar /opt/jenkins-cli.jar -s 'http://localhost:8080' groovy =",
+                                            data=(SCRIPT % json.dumps(module.params)))
+    if (rc != 0):
+        module.fail_json(msg=stderr)
+
+    print stdout
+
+from ansible.module_utils.basic import *
+if __name__ == '__main__':
+    main()

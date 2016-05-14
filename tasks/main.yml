@@ -1,0 +1,106 @@
+---
+- name: Create an SSH key for the Unix user
+  user: name={{ ansible_user_id }} generate_ssh_key=yes
+
+- name: Configure Jenkins security realm
+  tags: solita_jenkins_security
+  solita_jenkins_security_realm: realm={{ solita_jenkins_security_realm }} admin_password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/solita_jenkins') }}
+  when: solita_jenkins_security_realm is defined
+
+- name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
+  tags: solita_jenkins_security
+  fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
+  when: ({{ item }} | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
+  with_items:
+    - solita_jenkins_users
+    - solita_jenkins_absent_users
+
+- name: Add present Jenkins users
+  tags: solita_jenkins_security
+  solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/' + item) }} state=present
+  with_items: "{{ solita_jenkins_users }}"
+
+- name: Remove absent Jenkins users
+  tags: solita_jenkins_security
+  solita_jenkins_user: name={{ item }} state=absent
+  with_items: "{{ solita_jenkins_absent_users }}"
+
+- name: copy job-dsl-config.xml to destination
+  become: yes
+  become_user: jenkins
+  copy: src={{ role_path }}/files/job-dsl-config.xml dest=/var/lib/jenkins/job-dsl-config.xml
+
+- name: Create the job-dsl job
+  shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ create-job job-dsl < '/var/lib/jenkins/job-dsl-config.xml'
+  args:
+    creates: /var/lib/jenkins/jobs/job-dsl/config.xml
+  register: create_job_dsl_job
+
+# If the Job DSL plugin was just installed, we need to restart Jenkins before
+# we can use the plugin. We can't tell whether the plugin was installed during
+# this playbook run, so instead we'll check whether the job-dsl job was just
+# created and assume that both happen during the same playbook run. The worst
+# that can happen is one unnecessary restart if someone goes and removes the
+# job-dsl job.
+- name: Restart Jenkins to activate the Job DSL plugin
+  service: name=jenkins state=restarted
+  when: create_job_dsl_job | changed
+
+# Stolen from geerlingguy.jenkins.
+- name: Wait for Jenkins to start up before proceeding.
+  shell: "curl -D - --silent http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}/cli/"
+  args:
+    warn: no
+  register: result
+  until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+  retries: "{{ jenkins_connection_retries }}"
+  delay: "{{ jenkins_connection_delay }}"
+  changed_when: false
+  when: create_job_dsl_job | changed
+
+- name: Update the job-dsl job configuration
+  become: yes
+  become_user: jenkins
+  copy:
+    src: job-dsl-config.xml
+    dest: /var/lib/jenkins/jobs/job-dsl/config.xml
+  register: update_job_dsl_job
+
+- name: Reload the job-dsl job
+  command: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ reload-job job-dsl
+  when: update_job_dsl_job | changed
+
+- name: Remove the old job-dsl workspace
+  tags: solita_jenkins_jobs
+  become: yes
+  file:
+    path: /var/lib/jenkins/jobs/job-dsl/workspace
+    state: absent
+
+- name: Copy the Job DSL scripts to the job-dsl workspace
+  tags: solita_jenkins_jobs
+  become: yes
+  become_user: jenkins
+  copy:
+    src: "{{ solita_jenkins_jobs_dir }}/"
+    dest: /var/lib/jenkins/jobs/job-dsl/workspace
+
+- name: Find the local Job DSL script templates
+  tags: solita_jenkins_jobs
+  command: "find '{{ solita_jenkins_jobs_dir }}' -type f -name '*.groovy.j2'"
+  delegate_to: localhost
+  register: find_script_templates
+
+- name: Copy the Job DSL script templates to the job-dsl workspace
+  tags: solita_jenkins_jobs
+  become: yes
+  become_user: jenkins
+  template:
+    src: "{{ item }}"
+    dest: /var/lib/jenkins/jobs/job-dsl/workspace/{{ item | regex_replace('^' + solita_jenkins_jobs_dir + '/?', '') | regex_replace('\.j2$', '') }}
+  with_items: "{{ find_script_templates.stdout_lines }}"
+  when: find_script_templates.stdout_lines != []
+
+- name: Run the Job DSL scripts
+  tags: solita_jenkins_jobs
+  shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ build job-dsl -s -v
