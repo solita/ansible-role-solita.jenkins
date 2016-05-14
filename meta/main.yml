@@ -131,7 +131,7 @@ galaxy_info:
   #- web
 dependencies:
   - role: geerlingguy.jenkins
-    version: 1.2.6
+    version: 2.0.0
     become: yes
     become_user: root
   # List your role dependencies here, one per line. Only
