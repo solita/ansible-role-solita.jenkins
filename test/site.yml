@@ -18,15 +18,21 @@
     - solita.jenkins
 
   tasks:
-    - apt: name={{ item }} state=present
+    - name: Install Ruby development tools
+      apt: name={{ item }} state=present
       become: yes
       with_items:
         - ruby-dev
         - g++
+      tags: ruby
 
-    - command: gem install bundler
+    - name: Install Bundler
+      command: gem install bundler
       become: yes
+      tags: ruby
 
-    - command: bundle install
+    - name: Install Ruby gems
+      command: bundle install
       args:
         chdir: /solita.jenkins/test
+      tags: ruby
