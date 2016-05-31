@@ -45,6 +45,7 @@
 - name: Restart Jenkins to activate the Job DSL plugin
   service: name=jenkins state=restarted
   when: create_job_dsl_job | changed
+  become: yes
 
 # Stolen from geerlingguy.jenkins.
 - name: Wait for Jenkins to start up before proceeding.
