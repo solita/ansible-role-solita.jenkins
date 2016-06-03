@@ -1,0 +1,75 @@
+- name: Find remote Job DSL scripts
+  find:
+    paths: "{{ solita_jenkins_job_dsl_workspace }}"
+    patterns: "*.groovy"
+    file_type: file
+    recurse: yes
+  register: find_remote_scripts
+
+- set_fact:
+    old_scripts: "{{ find_remote_scripts.files | map(attribute='path') | map('relpath', solita_jenkins_job_dsl_workspace) | list }}"
+
+- name: Find local Job DSL scripts
+  delegate_to: localhost
+  find:
+    paths: "{{ solita_jenkins_jobs_dir }}"
+    patterns: "*.groovy"
+    file_type: file
+    recurse: yes
+  register: find_local_scripts
+
+- set_fact:
+    scripts: "{{ find_local_scripts.files | map(attribute='path') | map('relpath', solita_jenkins_jobs_dir) | list }}"
+
+- name: Copy the Job DSL scripts to the job-dsl workspace
+  become: yes
+  become_user: jenkins
+  copy:
+    src: "{{ solita_jenkins_jobs_dir }}/{{ item }}"
+    dest: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
+  with_items: "{{ scripts }}"
+  register: copy_scripts
+
+- name: Find local Job DSL script templates
+  delegate_to: localhost
+  find:
+    paths: "{{ solita_jenkins_jobs_dir }}"
+    patterns: "*.groovy.j2"
+    file_type: file
+    recurse: yes
+  register: find_local_templates
+
+- set_fact:
+    templates: "{{ find_local_templates.files | map(attribute='path') | map('relpath', solita_jenkins_jobs_dir) | list }}"
+
+- name: Create directories for the Job DSL script templates
+  become: yes
+  become_user: jenkins
+  file:
+    path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
+    state: directory
+  with_items:
+    - "{{ templates | map('dirname') | list }}"
+
+- name: Copy the Job DSL script templates to the job-dsl workspace
+  become: yes
+  become_user: jenkins
+  template:
+    src: "{{ solita_jenkins_jobs_dir }}/{{ item }}"
+    dest: "{{ solita_jenkins_job_dsl_workspace }}/{{ item | regex_replace('\\.j2$', '') }}"
+  with_items:
+    - "{{ templates }}"
+  register: copy_templates
+
+- name: Remove old Job DSL scripts
+  become: yes
+  become_user: jenkins
+  file:
+    path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
+    state: absent
+  with_items: "{{ old_scripts | difference(scripts) | difference(templates | map('regex_replace', '\\.j2$', '') | list) }}"
+  register: remove_old_scripts
+
+- name: Run the Job DSL scripts
+  shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ build job-dsl -s -v
+  when: (copy_scripts | changed) or (copy_templates | changed) or (remove_old_scripts | changed)

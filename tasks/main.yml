@@ -3,27 +3,27 @@
   user: name={{ ansible_user_id }} generate_ssh_key=yes
 
 - name: Configure Jenkins security realm
-  tags: solita_jenkins_security
   solita_jenkins_security_realm: realm={{ solita_jenkins_security_realm }} admin_password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/solita_jenkins') }}
   when: solita_jenkins_security_realm is defined
+  tags: solita_jenkins_security
 
 - name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
-  tags: solita_jenkins_security
   fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
   when: ({{ item }} | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
   with_items:
     - solita_jenkins_users
     - solita_jenkins_absent_users
+  tags: solita_jenkins_security
 
 - name: Add present Jenkins users
-  tags: solita_jenkins_security
   solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/' + item) }} state=present
   with_items: "{{ solita_jenkins_users }}"
+  tags: solita_jenkins_security
 
 - name: Remove absent Jenkins users
-  tags: solita_jenkins_security
   solita_jenkins_user: name={{ item }} state=absent
   with_items: "{{ solita_jenkins_absent_users }}"
+  tags: solita_jenkins_security
 
 - name: copy job-dsl-config.xml to destination
   become: yes
@@ -71,37 +71,5 @@
   command: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ reload-job job-dsl
   when: update_job_dsl_job | changed
 
-- name: Remove the old job-dsl workspace
+- include: jobs.yml
   tags: solita_jenkins_jobs
-  become: yes
-  file:
-    path: /var/lib/jenkins/jobs/job-dsl/workspace
-    state: absent
-
-- name: Copy the Job DSL scripts to the job-dsl workspace
-  tags: solita_jenkins_jobs
-  become: yes
-  become_user: jenkins
-  copy:
-    src: "{{ solita_jenkins_jobs_dir }}/"
-    dest: /var/lib/jenkins/jobs/job-dsl/workspace
-
-- name: Find the local Job DSL script templates
-  tags: solita_jenkins_jobs
-  command: "find '{{ solita_jenkins_jobs_dir }}' -type f -name '*.groovy.j2'"
-  delegate_to: localhost
-  register: find_script_templates
-
-- name: Copy the Job DSL script templates to the job-dsl workspace
-  tags: solita_jenkins_jobs
-  become: yes
-  become_user: jenkins
-  template:
-    src: "{{ item }}"
-    dest: /var/lib/jenkins/jobs/job-dsl/workspace/{{ item | regex_replace('^' + solita_jenkins_jobs_dir + '/?', '') | regex_replace('\.j2$', '') }}
-  with_items: "{{ find_script_templates.stdout_lines }}"
-  when: find_script_templates.stdout_lines != []
-
-- name: Run the Job DSL scripts
-  tags: solita_jenkins_jobs
-  shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ build job-dsl -s -v
