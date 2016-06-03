@@ -1,4 +1,18 @@
 ---
+# Force Jenkins restart, if one is pending after e.g. plugin installation.
+- meta: flush_handlers
+
+# Stolen from geerlingguy.jenkins.
+- name: Wait for Jenkins to start up before proceeding.
+  shell: "curl -D - --silent http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}/cli/"
+  args:
+    warn: no
+  register: result
+  until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+  retries: "{{ jenkins_connection_retries }}"
+  delay: "{{ jenkins_connection_delay }}"
+  changed_when: false
+
 - name: Create an SSH key for the Unix user
   user: name={{ ansible_user_id }} generate_ssh_key=yes
 
@@ -35,29 +49,6 @@
   args:
     creates: /var/lib/jenkins/jobs/job-dsl/config.xml
   register: create_job_dsl_job
-
-# If the Job DSL plugin was just installed, we need to restart Jenkins before
-# we can use the plugin. We can't tell whether the plugin was installed during
-# this playbook run, so instead we'll check whether the job-dsl job was just
-# created and assume that both happen during the same playbook run. The worst
-# that can happen is one unnecessary restart if someone goes and removes the
-# job-dsl job.
-- name: Restart Jenkins to activate the Job DSL plugin
-  service: name=jenkins state=restarted
-  when: create_job_dsl_job | changed
-  become: yes
-
-# Stolen from geerlingguy.jenkins.
-- name: Wait for Jenkins to start up before proceeding.
-  shell: "curl -D - --silent http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}/cli/"
-  args:
-    warn: no
-  register: result
-  until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
-  retries: "{{ jenkins_connection_retries }}"
-  delay: "{{ jenkins_connection_delay }}"
-  changed_when: false
-  when: create_job_dsl_job | changed
 
 - name: Update the job-dsl job configuration
   become: yes
