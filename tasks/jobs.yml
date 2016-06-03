@@ -21,6 +21,15 @@
 - set_fact:
     scripts: "{{ find_local_scripts.files | map(attribute='path') | map('relpath', solita_jenkins_jobs_dir) | list }}"
 
+- name: Create directories for the Job DSL scripts
+  become: yes
+  become_user: jenkins
+  file:
+    path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
+    state: directory
+  with_items:
+    - "{{ scripts | map('dirname') | list }}"
+
 - name: Copy the Job DSL scripts to the job-dsl workspace
   become: yes
   become_user: jenkins

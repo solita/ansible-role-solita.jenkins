@@ -24,6 +24,7 @@ module TestHelper
       playbook_yml.close
 
       (options[:jobs] || {}).each do |k, v|
+        FileUtils::mkdir_p(File::dirname(k))
         f = File.new(k, 'w')
         job_files.push f
         f.write(unindent(v))
