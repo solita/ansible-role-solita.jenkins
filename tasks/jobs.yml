@@ -28,7 +28,7 @@
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: directory
   with_items:
-    - "{{ scripts | map('dirname') | list }}"
+    - "{{ scripts | map('dirname') | unique | list }}"
 
 - name: Copy the Job DSL scripts to the job-dsl workspace
   become: yes
@@ -58,7 +58,7 @@
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: directory
   with_items:
-    - "{{ templates | map('dirname') | list }}"
+    - "{{ templates | map('dirname') | unique | list }}"
 
 - name: Copy the Job DSL script templates to the job-dsl workspace
   become: yes
