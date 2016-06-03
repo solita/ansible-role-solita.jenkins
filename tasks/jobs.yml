@@ -72,4 +72,4 @@
 
 - name: Run the Job DSL scripts
   shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ build job-dsl -s -v
-  when: (copy_scripts | changed) or (copy_templates | changed) or (remove_old_scripts | changed)
+  when: ((scripts | length > 0) or (templates | length > 0)) and ((copy_scripts | changed) or (copy_templates | changed) or (remove_old_scripts | changed))

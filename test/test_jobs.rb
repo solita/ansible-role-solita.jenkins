@@ -1,9 +1,26 @@
 require 'test_helper'
 require 'fileutils'
+require 'tmpdir'
 
 class TestJobs < Minitest::Test
 
   include TestHelper
+
+  # The role works without any job files.
+  def test_no_jobs
+    # Configure Jenkins with no jobs.
+    Dir.mktmpdir do |d|
+      ansible_playbook '--tags solita_jenkins_jobs', <<-EOF
+      ---
+      - hosts: vagrant
+        vars:
+          solita_jenkins_jobs_dir: #{d}
+        roles:
+          - solita.jenkins
+      EOF
+    end
+    # This test fails if there's an error running the playbook.
+  end
 
   # Jobs are created/modified/deleted to match jobs/Main.groovy.
   def test_jobs
