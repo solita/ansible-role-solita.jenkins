@@ -71,7 +71,7 @@ You can install this role and its dependencies with ansible-galaxy_. First add t
 
 .. highlight:: sh
 
-Then run ``ansible-galaxy`` to install the plugin::
+Then run ``ansible-galaxy`` to install the role::
 
     ansible-galaxy install -p path/to/your/roles -r requirements.yml
 
