@@ -39,6 +39,21 @@
   with_items: "{{ solita_jenkins_absent_users }}"
   tags: solita_jenkins_security
 
+- name: Generate an SSH key pair for Jenkins
+  become: yes
+  become_user: jenkins
+  user: name=jenkins generate_ssh_key=yes
+  tags: solita_jenkins_ssh_key
+
+- name: Fetch Jenkins' public key
+  become: yes
+  become_user: jenkins
+  fetch:
+    src: /var/lib/jenkins/.ssh/id_rsa.pub
+    dest: "{{ inventory_dir }}/solita_jenkins_id_rsa.pub"
+    flat: yes
+  tags: solita_jenkins_ssh_key
+
 - name: copy job-dsl-config.xml to destination
   become: yes
   become_user: jenkins
