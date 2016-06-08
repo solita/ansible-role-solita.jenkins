@@ -4,6 +4,10 @@ import groovy.json.*
 import jenkins.model.*
 import hudson.security.*
 import org.jenkinsci.main.modules.cli.auth.ssh.UserPropertyImpl
+import hudson.security.LDAPSecurityRealm.CacheConfiguration
+import hudson.security.LDAPSecurityRealm.EnvironmentProperty
+import hudson.util.Secret
+import jenkins.security.plugins.ldap.*
 
 jsonSlurper = new JsonSlurper()
 def params = jsonSlurper.parseText('%s')
@@ -15,7 +19,44 @@ result = [
 def jenkins = Jenkins.getInstance()
 def currentSecurityRealm = jenkins.getSecurityRealm()
 
-if (params.realm == 'jenkins') {
+if (params.realm == 'ldap') {
+
+    def server = params.ldap["protocol"] + "://" + params.ldap["host"] + ":" + params.ldap["port"]
+    def rootDN = params.ldap["root_dn"]
+    def userSearchBase = params.ldap["user_search_base"]
+    def userSearch = params.ldap["user_search"]
+    def groupSearchBase = params.ldap["group_search_base"]
+    def groupSearchFilter = params.ldap["group_search_filter"]
+    def groupMembershipStrategy = new jenkins.security.plugins.ldap.FromUserRecordLDAPGroupMembershipStrategy()
+    def managerDN = params.ldap["manager_dn"]
+    def managerPasswordSecret = Secret.fromString(params.ldap["manager_password"])
+    def inhibitInferRootDN = false
+    def disableMailAddressResolver = false
+    def cache = new CacheConfiguration(50, 3600)
+    def environmentProperties = null
+    def displayNameAttributeName = params.ldap["display_name_attr"]
+    def mailAddressAttributeName = params.ldap["email_attr"]
+    def userIdStrategy = IdStrategy.CASE_INSENSITIVE
+    def groupIdStrategy = IdStrategy.CASE_INSENSITIVE
+    def realm = new LDAPSecurityRealm(server, rootDN, userSearchBase, userSearch, groupSearchBase, groupSearchFilter,
+                                      groupMembershipStrategy, managerDN, managerPasswordSecret, inhibitInferRootDN,
+                                      disableMailAddressResolver, cache, environmentProperties, displayNameAttributeName,
+                                      mailAddressAttributeName, userIdStrategy, groupIdStrategy)
+
+    def strategy = new hudson.security.GlobalMatrixAuthorizationStrategy()
+    strategy.add(Jenkins.ADMINISTER, "solita_jenkins")
+
+    for (String userOrGroup : params.ldap["users_and_groups"]) {
+        strategy.add(Jenkins.ADMINISTER, userOrGroup)
+    }
+
+    jenkins.setAuthorizationStrategy(strategy)
+    jenkins.setSecurityRealm(realm)
+
+    jenkins.save()
+    result.changed = true
+
+} else if (params.realm == 'jenkins') {
     if (!(currentSecurityRealm instanceof HudsonPrivateSecurityRealm)) {
         def newSecurityRealm = new HudsonPrivateSecurityRealm(false)
         jenkins.setSecurityRealm(newSecurityRealm)
@@ -54,8 +95,9 @@ import os.path
 def main():
     module = AnsibleModule(
         argument_spec = dict(
-            realm=dict(required=True, choices=['jenkins', 'none']),
-            admin_password=dict(type='str')
+            realm=dict(required=True, choices=['ldap', 'jenkins', 'none']),
+            admin_password=dict(type='str'),
+            ldap=dict(required=False, default=None)
         )
     )
 

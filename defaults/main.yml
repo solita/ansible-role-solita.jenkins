@@ -3,3 +3,20 @@ solita_jenkins_plugins: []
 solita_jenkins_users: []
 solita_jenkins_absent_users: []
 solita_jenkins_jobs_dir: "{{ playbook_dir }}/jobs"
+
+solita_jenkins_ldap_protocol: ldaps
+solita_jenkins_ldap_host: server.ad
+solita_jenkins_ldap_port: 1234
+
+solita_jenkins_ldap_root_dn: DC=group
+solita_jenkins_ldap_user_search_base: CN=users
+solita_jenkins_ldap_user_search: samaccountname={0}
+solita_jenkins_ldap_group_search_base:
+solita_jenkins_ldap_group_search_filter: (& (cn={0}) (objectclass=group) )
+solita_jenkins_ldap_manager_dn: manager
+solita_jenkins_ldap_manager_password: password
+
+solita_jenkins_ldap_display_name_attr: displayname
+solita_jenkins_ldap_email_attr: mail
+
+solita_jenkins_ldap_users_and_groups: []

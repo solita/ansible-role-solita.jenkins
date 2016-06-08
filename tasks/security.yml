@@ -1,0 +1,35 @@
+- name: Configure Jenkins security realm
+  tags: solita_jenkins_security
+  solita_jenkins_security_realm:
+    realm: "{{ solita_jenkins_security_realm }}"
+    admin_password: "{{ lookup('password', inventory_dir + '/solita_jenkins_default_password/solita_jenkins') }}"
+    ldap:
+      protocol: "{{ solita_jenkins_ldap_protocol }}"
+      host: "{{ solita_jenkins_ldap_host }}"
+      port: "{{ solita_jenkins_ldap_port }}"
+      root_dn: "{{ solita_jenkins_ldap_root_dn }}"
+      user_search_base: "{{ solita_jenkins_ldap_user_search_base }}"
+      user_search: "{{ solita_jenkins_ldap_user_search }}"
+      group_search_base: "{{ solita_jenkins_ldap_group_search_base }}"
+      group_search_filter: "{{ solita_jenkins_ldap_group_search_filter }}"
+      manager_dn: "{{ solita_jenkins_ldap_manager_dn }}"
+      manager_password: "{{ solita_jenkins_ldap_manager_password  }}"
+      display_name_attr: "{{ solita_jenkins_ldap_display_name_attr }}"
+      email_attr: "{{ solita_jenkins_ldap_email_attr }}"
+      users_and_groups: "{{ solita_jenkins_ldap_users_and_groups }}"
+  when: solita_jenkins_security_realm is defined
+
+- name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
+  fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
+  when: ({{ item }} | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
+  with_items:
+    - solita_jenkins_users
+    - solita_jenkins_absent_users
+
+- name: Add present Jenkins users
+  solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/' + item) }} state=present
+  with_items: "{{ solita_jenkins_users }}"
+
+- name: Remove absent Jenkins users
+  solita_jenkins_user: name={{ item }} state=absent
+  with_items: "{{ solita_jenkins_absent_users }}"

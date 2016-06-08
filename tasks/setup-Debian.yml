@@ -1,0 +1,5 @@
+---
+- name: Allow solita_jenkins user access when LDAP is used
+  lineinfile: dest=/etc/default/jenkins line='JAVA_ARGS="-Djava.awt.headless=true -Dhudson.model.User.allowNonExistentUserToLogin=true"'
+  when: solita_jenkins_security_realm == "ldap"
+  tags: solita_jenkins_security
