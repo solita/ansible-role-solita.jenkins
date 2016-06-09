@@ -43,6 +43,12 @@ if (params.realm == 'ldap') {
                                       disableMailAddressResolver, cache, environmentProperties, displayNameAttributeName,
                                       mailAddressAttributeName, userIdStrategy, groupIdStrategy)
 
+    // User for CLI access
+    def privateRealm = new HudsonPrivateSecurityRealm(false)
+    def user = privateRealm.createAccount('solita_jenkins', params.admin_password)
+    user.addProperty(new UserPropertyImpl(params.public_key));
+    user.save()
+
     def strategy = new hudson.security.GlobalMatrixAuthorizationStrategy()
     strategy.add(Jenkins.ADMINISTER, "solita_jenkins")
 
