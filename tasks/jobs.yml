@@ -10,6 +10,7 @@
     old_scripts: "{{ find_remote_scripts.files | map(attribute='path') | map('relpath', solita_jenkins_job_dsl_workspace) | list }}"
 
 - name: Find local Job DSL scripts
+  become: no
   delegate_to: localhost
   find:
     paths: "{{ solita_jenkins_jobs_dir }}"
@@ -40,6 +41,7 @@
   register: copy_scripts
 
 - name: Find local Job DSL script templates
+  become: no
   delegate_to: localhost
   find:
     paths: "{{ solita_jenkins_jobs_dir }}"
