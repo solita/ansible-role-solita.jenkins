@@ -1,43 +1,10 @@
 ---
-# Force Jenkins restart, if one is pending after e.g. plugin installation.
-- meta: flush_handlers
+- include: jenkins_23232.yml
 
-# Stolen from geerlingguy.jenkins.
-- name: Wait for Jenkins to start up before proceeding.
-  shell: "curl -D - --silent http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}/cli/"
-  args:
-    warn: no
-  register: result
-  until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
-  retries: "{{ jenkins_connection_retries }}"
-  delay: "{{ jenkins_connection_delay }}"
-  changed_when: false
-
-- name: Create an SSH key for the Unix user
-  user: name={{ ansible_user_id }} generate_ssh_key=yes
-
-- name: Configure Jenkins security realm
-  solita_jenkins_security_realm: realm={{ solita_jenkins_security_realm }} admin_password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/solita_jenkins') }}
-  when: solita_jenkins_security_realm is defined
+- include: security.yml
   tags: solita_jenkins_security
 
-- name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
-  fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
-  when: ({{ item }} | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
-  with_items:
-    - solita_jenkins_users
-    - solita_jenkins_absent_users
-  tags: solita_jenkins_security
-
-- name: Add present Jenkins users
-  solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/' + item) }} state=present
-  with_items: "{{ solita_jenkins_users }}"
-  tags: solita_jenkins_security
-
-- name: Remove absent Jenkins users
-  solita_jenkins_user: name={{ item }} state=absent
-  with_items: "{{ solita_jenkins_absent_users }}"
-  tags: solita_jenkins_security
+- include: plugins.yml
 
 - name: copy job-dsl-config.xml to destination
   become: yes

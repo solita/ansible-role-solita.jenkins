@@ -2,11 +2,13 @@
 solita.jenkins
 ==============
 
-A Jenkins installation completely configured with Ansible. This role builds on top of geerlingguy.jenkins_, adding support for configuring Jenkins and defining jobs and views with a `Job DSL`_ script.
+A Jenkins installation completely configured with Ansible. This role builds on top of geerlingguy.jenkins_, adding the following features:
+
+  - Support for Jenkins 2
+  - User management
+  - Job and view configuration with `Job DSL`_
 
 This role is tested on Ubuntu 14.04 LTS (Trusty Thar), but it should work on all operating systems supported by `the upstream role`_.
-
-In its default settings, this role does not change Jenkins' configuration in any way, so it's safe to apply it to a server with an existing, manually configured, Jenkins installation.
 
 .. contents::
    :backlinks: none
@@ -116,7 +118,7 @@ A security realm means the method that Jenkins uses to authenticate users. To en
     Disables security.
 
 ``jenkins``
-    Enables security, authentication against Jenkins' own user database, and matrix-based authorization.
+    The default setting. Enables security, authentication against Jenkins' own user database, and matrix-based authorization.
 
 User Management
 ===============

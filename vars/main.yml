@@ -1,5 +1,4 @@
 ---
 solita_jenkins_plugins_required:
   - job-dsl
-jenkins_plugins: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"
 solita_jenkins_job_dsl_workspace: /var/lib/jenkins/jobs/job-dsl/workspace

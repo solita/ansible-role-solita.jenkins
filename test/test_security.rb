@@ -31,47 +31,6 @@ class TestSecurity < Minitest::Test
     assert_forbidden { open_dashboard }
   end
 
-  # When solita_jenkins_security_realm is undefined, an unsecured Jenkins
-  # remains unsecured.
-  def test_realm_undefined_unsecured
-    ansible_playbook '--tags solita_jenkins_security', <<-EOF
-    ---
-    - hosts: vagrant
-      vars:
-        solita_jenkins_security_realm: none
-      roles:
-        - solita.jenkins
-    EOF
-    ansible_playbook '--tags solita_jenkins_security', <<-EOF
-    ---
-    - hosts: vagrant
-      roles:
-        - solita.jenkins
-    EOF
-    open_dashboard
-    assert can_manage_jenkins?
-  end
-
-  # When solita_jenkins_security_realm is undefined, a secured Jenkins remains
-  # secured.
-  def test_realm_undefined_secured
-    ansible_playbook '--tags solita_jenkins_security', <<-EOF
-    ---
-    - hosts: vagrant
-      vars:
-        solita_jenkins_security_realm: jenkins
-      roles:
-        - solita.jenkins
-    EOF
-    ansible_playbook '--tags solita_jenkins_security', <<-EOF
-    ---
-    - hosts: vagrant
-      roles:
-        - solita.jenkins
-    EOF
-    assert_forbidden { open_dashboard }
-  end
-
   # It's an error to use user variables when solita_jenkins_security_realm is
   # not jenkins.
   def test_users_with_wrong_security_realm
@@ -80,6 +39,7 @@ class TestSecurity < Minitest::Test
       ---
       - hosts: vagrant
         vars:
+          solita_jenkins_security_realm: none
           solita_jenkins_users:
             - foo
         roles:
@@ -119,7 +79,7 @@ class TestSecurity < Minitest::Test
     EOF
     # Foo and xyz should remain present, and bar should be added.
     login_as 'solita_jenkins'
-    assert_equal ['foo', 'xyz', 'bar'].to_set, list_users
+    assert_equal ['admin', 'foo', 'xyz', 'bar'].to_set, list_users
   end
 
   # Users listed in solita_jenkins_absent_users are removed if they are
@@ -154,7 +114,7 @@ class TestSecurity < Minitest::Test
     # Xyz should remain present, bar should remain absent, and foo should be
     # removed.
     login_as 'solita_jenkins'
-    assert_equal ['xyz'].to_set, list_users
+    assert_equal ['admin', 'xyz'].to_set, list_users
   end
 
 end

@@ -1,0 +1,75 @@
+---
+- name: Create an SSH key for the Unix user
+  user: name={{ ansible_user_id }} generate_ssh_key=yes
+  register: user
+
+- set_fact:
+    solita_jenkins_public_key: "{{ user.ssh_public_key }}"
+
+- name: Install matrix-auth plugin and its dependencies
+  get_url:
+    url: "http://updates.jenkins-ci.org/latest/{{ item }}.hpi"
+    dest: /var/lib/jenkins/plugins
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+  become: yes
+  register: matrix_auth_plugin
+  with_items:
+    - icon-shim
+    - matrix-auth
+
+- name: Create init.groovy.d
+  file:
+    path: /var/lib/jenkins/init.groovy.d
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+  become: yes
+
+- name: Disable Jenkins setup wizard
+  copy:
+    dest: /var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
+    content: 2.0
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+  become: yes
+
+- name: Copy Jenkins security realm configuration
+  template:
+    src: solita_jenkins_security_realm.groovy.j2
+    dest: /var/lib/jenkins/init.groovy.d/solita_jenkins_security_realm.groovy
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+  register: security_realm
+  become: yes
+
+- name: Set the TCP port for JNLP agents
+  lineinfile:
+    dest: /var/lib/jenkins/config.xml
+    regexp: "^(\\s*)<slaveAgentPort>"
+    line: "\\1<slaveAgentPort>{{ solita_jenkins_jnlp_port }}</slaveAgentPort>"
+    backrefs: yes
+  register: jnlp_port
+  become: yes
+
+- include: restart.yml
+  when: (matrix_auth_plugin | changed) or (security_realm | changed) or (jnlp_port | changed)
+
+- name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
+  fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
+  when: ({{ item }} | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
+  with_items:
+    - solita_jenkins_users
+    - solita_jenkins_absent_users
+
+- name: Add present Jenkins users
+  solita_jenkins_user: name={{ item }} password={{ lookup('password', inventory_dir + '/solita_jenkins_default_password/' + item) }} state=present
+  with_items: "{{ solita_jenkins_users }}"
+
+- name: Remove absent Jenkins users
+  solita_jenkins_user: name={{ item }} state=absent
+  with_items: "{{ solita_jenkins_absent_users }}"

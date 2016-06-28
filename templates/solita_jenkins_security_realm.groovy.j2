@@ -1,0 +1,31 @@
+import jenkins.model.*
+import hudson.security.*
+import org.jenkinsci.main.modules.cli.auth.ssh.UserPropertyImpl
+
+def solita_jenkins_security_realm = '{{ solita_jenkins_security_realm }}'
+
+def jenkins = Jenkins.getInstance()
+
+if (solita_jenkins_security_realm == 'jenkins') {
+    def securityRealm = new HudsonPrivateSecurityRealm(false)
+    jenkins.setSecurityRealm(securityRealm)
+
+    def strategy = new GlobalMatrixAuthorizationStrategy()
+    strategy.add(Jenkins.ADMINISTER, 'solita_jenkins')
+    jenkins.setAuthorizationStrategy(strategy)
+
+    def user = securityRealm.createAccount('solita_jenkins', '{{ lookup("password", inventory_dir + "/solita_jenkins_default_password/solita_jenkins") }}')
+    user.addProperty(new UserPropertyImpl('{{ solita_jenkins_public_key }}'));
+    user.save()
+
+    jenkins.save()
+} else if (solita_jenkins_security_realm == 'none') {
+    // If we leave the user, further attempts to use jenkins-cli.jar with
+    // key-based authentication enabled fail for some reason. Clearing the
+    // user's SSH key wasn't enough to solve the problem.
+    jenkins.getUser('solita_jenkins').delete()
+
+    jenkins.disableSecurity()
+
+    jenkins.save()
+}
