@@ -48,7 +48,7 @@ module TestHelper
   end
 
   def open_dashboard
-    @agent.get('http://localhost:8080')
+    @agent.get('http://localhost:8081/jenkins')
   end
 
   def can_manage_jenkins?
@@ -65,7 +65,7 @@ module TestHelper
   end
 
   def login_as(username)
-    page = @agent.get('http://localhost:8080/login')
+    page = @agent.get('http://localhost:8081/jenkins/login')
     form = page.form('login')
     form.j_username = username
     form.j_password = File.read("environments/vagrant/solita_jenkins_default_password/#{username}").strip
@@ -73,7 +73,7 @@ module TestHelper
   end
 
   def list_users
-    @agent.get('http://localhost:8080/securityRealm')\
+    @agent.get('http://localhost:8081/jenkins/securityRealm')\
       .search('//table[@id="people"]//tr/td[2]//*')\
       .map { |n| n.text }\
       .to_set\
@@ -81,7 +81,7 @@ module TestHelper
   end
 
   def list_jobs
-    @agent.get('http://localhost:8080')\
+    @agent.get('http://localhost:8081/jenkins')\
       .search('table#projectstatus>tr>td:nth-child(3)')\
       .map { |n| n.text }\
       .to_set\

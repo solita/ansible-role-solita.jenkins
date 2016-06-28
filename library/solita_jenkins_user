@@ -49,13 +49,14 @@ import json
 def main():
     module = AnsibleModule(
         argument_spec = dict(
+            jenkins_url=dict(type='str', required=True),
             name=dict(type='str', required=True),
             state=dict(choices=['present', 'absent'], default='present'),
             password=dict(type='str')
         )
     )
 
-    rc, stdout, stderr = module.run_command("java -jar /opt/jenkins-cli.jar -s 'http://localhost:8080' groovy =",
+    rc, stdout, stderr = module.run_command("java -jar /opt/jenkins-cli.jar -s '%(jenkins_url)s' groovy =" % module.params,
                                             data=(SCRIPT % json.dumps(module.params)))
     if (rc != 0):
         module.fail_json(msg=stderr)
