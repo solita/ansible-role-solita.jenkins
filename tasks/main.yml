@@ -12,7 +12,7 @@
   copy: src={{ role_path }}/files/job-dsl-config.xml dest=/var/lib/jenkins/job-dsl-config.xml
 
 - name: Create the job-dsl job
-  shell: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ create-job job-dsl < '/var/lib/jenkins/job-dsl-config.xml'
+  shell: java -jar {{ jenkins_jar_location }} -s '{{ solita_jenkins_url }}' create-job job-dsl < '/var/lib/jenkins/job-dsl-config.xml'
   args:
     creates: /var/lib/jenkins/jobs/job-dsl/config.xml
   register: create_job_dsl_job
@@ -26,7 +26,7 @@
   register: update_job_dsl_job
 
 - name: Reload the job-dsl job
-  command: java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/ reload-job job-dsl
+  command: java -jar {{ jenkins_jar_location }} -s '{{ solita_jenkins_url }}' reload-job job-dsl
   when: update_job_dsl_job | changed
 
 - include: jobs.yml
