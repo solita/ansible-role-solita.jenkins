@@ -26,20 +26,21 @@ if (params.state == 'present') {
     if (!(params.name in currentUsers)) {
         user = securityRealm.createAccount(params.name, params.password)
         user.save()
+        result.changed = true
+    }
 
+    if (!(authorizationStrategy.hasPermission(params.name, Jenkins.ADMINISTER))) {
         authorizationStrategy.add(Jenkins.ADMINISTER, params.name)
-        jenkins.save()
-
         result.changed = true
     }
 } else {
     if (params.name in currentUsers) {
         user = securityRealm.getUser(params.name)
         user.delete()
-
         result.changed = true
     }
 }
+jenkins.save()
 
 println JsonOutput.toJson(result)
 """
