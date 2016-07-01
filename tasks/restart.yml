@@ -1,15 +1,18 @@
 ---
-- name: Restart Jenkins
-  service: name=jenkins state=restarted
-  become: yes
+- block:
+    - name: Restart Jenkins
+      service: name=jenkins state=restarted
+      become: yes
 
-# Stolen from geerlingguy.jenkins.
-- name: Wait for Jenkins to start up before proceeding.
-  shell: "curl -D - --silent {{ solita_jenkins_url }}/cli/"
-  args:
-    warn: no
-  register: result
-  until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
-  retries: "{{ jenkins_connection_retries }}"
-  delay: "{{ jenkins_connection_delay }}"
-  changed_when: false
+    # Stolen from geerlingguy.jenkins.
+    - name: Wait for Jenkins to start up before proceeding.
+      shell: "curl -D - --silent {{ solita_jenkins_url }}/cli/"
+      args:
+        warn: no
+      register: result
+      until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+      retries: "{{ jenkins_connection_retries }}"
+      delay: "{{ jenkins_connection_delay }}"
+      changed_when: false
+
+  when: solita_jenkins_restart
