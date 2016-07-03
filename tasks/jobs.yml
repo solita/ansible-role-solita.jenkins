@@ -23,20 +23,20 @@
     scripts: "{{ find_local_scripts.files | map(attribute='path') | map('relpath', solita_jenkins_jobs_dir) | list }}"
 
 - name: Create directories for the Job DSL scripts
-  become: yes
-  become_user: jenkins
   file:
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: directory
+    owner: jenkins
+    group: jenkins
   with_items:
     - "{{ scripts | map('dirname') | unique | list }}"
 
 - name: Copy the Job DSL scripts to the job-dsl workspace
-  become: yes
-  become_user: jenkins
   copy:
     src: "{{ solita_jenkins_jobs_dir }}/{{ item }}"
     dest: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
+    owner: jenkins
+    group: jenkins
   with_items: "{{ scripts }}"
   register: copy_scripts
 
@@ -54,30 +54,30 @@
     templates: "{{ find_local_templates.files | map(attribute='path') | map('relpath', solita_jenkins_jobs_dir) | list }}"
 
 - name: Create directories for the Job DSL script templates
-  become: yes
-  become_user: jenkins
   file:
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: directory
+    owner: jenkins
+    group: jenkins
   with_items:
     - "{{ templates | map('dirname') | unique | list }}"
 
 - name: Copy the Job DSL script templates to the job-dsl workspace
-  become: yes
-  become_user: jenkins
   template:
     src: "{{ solita_jenkins_jobs_dir }}/{{ item }}"
     dest: "{{ solita_jenkins_job_dsl_workspace }}/{{ item | regex_replace('\\.j2$', '') }}"
+    owner: jenkins
+    group: jenkins
   with_items:
     - "{{ templates }}"
   register: copy_templates
 
 - name: Remove old Job DSL scripts
-  become: yes
-  become_user: jenkins
   file:
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: absent
+    owner: jenkins
+    group: jenkins
   with_items: "{{ old_scripts | difference(scripts) | difference(templates | map('regex_replace', '\\.j2$', '') | list) }}"
   register: remove_old_scripts
 
