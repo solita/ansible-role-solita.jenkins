@@ -7,6 +7,7 @@ Git master
 ----------
 
 - Fix permission issues due to missing ``become`` options.
+- Try to work around ``inventory_dir`` being ``None`` (`#14`_).
 
 --------------------------
 Version 1.0.2 (2016-07-03)
@@ -25,3 +26,6 @@ Version 1.0.0 (2016-06-29)
 --------------------------
 
 - Add support for Jenkins 2.
+
+..
+_#14: https://github.com/solita/ansible-role-solita.jenkins/issues/14

@@ -18,7 +18,7 @@ if (solita_jenkins_security_realm == 'jenkins') {
     def currentUsers = jenkins.getSecurityRealm().getAllUsers().collect { it.getId() }
 
     if (!('solita_jenkins' in currentUsers)) {
-        def user = jenkins.getSecurityRealm().createAccount('solita_jenkins', '{{ lookup("password", inventory_dir + "/solita_jenkins_default_password/solita_jenkins") }}')
+        def user = jenkins.getSecurityRealm().createAccount('solita_jenkins', '{{ lookup("password", solita_jenkins_password_dir + "/solita_jenkins") }}')
         user.addProperty(new UserPropertyImpl('{{ solita_jenkins_public_key }}'));
         user.save()
 

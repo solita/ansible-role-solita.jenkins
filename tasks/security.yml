@@ -70,7 +70,7 @@
   solita_jenkins_user:
     jenkins_url: "{{ solita_jenkins_url }}"
     name: "{{ item }}"
-    password: "{{ lookup('password', inventory_dir + '/solita_jenkins_default_password/' + item) }}"
+    password: "{{ lookup('password', solita_jenkins_password_dir + '/' + item) }}"
   with_items: "{{ solita_jenkins_users }}"
 
 - name: Remove absent Jenkins users
