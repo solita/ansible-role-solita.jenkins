@@ -6,9 +6,12 @@
 
 - include: plugins.yml
 
-- name: copy job-dsl-config.xml to destination
+# Copy job-dsl-config.xml to server so we can use Jenkins CLI to create a new
+# job from it.
+- name: Copy job-dsl-config.xml to destination
+  become: yes
   copy:
-    src: "{{ role_path }}/files/job-dsl-config.xml"
+    src: job-dsl-config.xml
     dest: /var/lib/jenkins/job-dsl-config.xml
     owner: jenkins
     group: jenkins
@@ -19,7 +22,9 @@
     creates: /var/lib/jenkins/jobs/job-dsl/config.xml
   register: create_job_dsl_job
 
+# Overwrite the config.xml of an already-created job.
 - name: Update the job-dsl job configuration
+  become: yes
   copy:
     src: job-dsl-config.xml
     dest: /var/lib/jenkins/jobs/job-dsl/config.xml

@@ -23,6 +23,7 @@
     scripts: "{{ find_local_scripts.files | map(attribute='path') | map('relpath', solita_jenkins_jobs_dir) | list }}"
 
 - name: Create directories for the Job DSL scripts
+  become: yes
   file:
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: directory
@@ -32,6 +33,7 @@
     - "{{ scripts | map('dirname') | unique | list }}"
 
 - name: Copy the Job DSL scripts to the job-dsl workspace
+  become: yes
   copy:
     src: "{{ solita_jenkins_jobs_dir }}/{{ item }}"
     dest: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
@@ -54,6 +56,7 @@
     templates: "{{ find_local_templates.files | map(attribute='path') | map('relpath', solita_jenkins_jobs_dir) | list }}"
 
 - name: Create directories for the Job DSL script templates
+  become: yes
   file:
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: directory
@@ -63,6 +66,7 @@
     - "{{ templates | map('dirname') | unique | list }}"
 
 - name: Copy the Job DSL script templates to the job-dsl workspace
+  become: yes
   template:
     src: "{{ solita_jenkins_jobs_dir }}/{{ item }}"
     dest: "{{ solita_jenkins_job_dsl_workspace }}/{{ item | regex_replace('\\.j2$', '') }}"
@@ -73,6 +77,7 @@
   register: copy_templates
 
 - name: Remove old Job DSL scripts
+  become: yes
   file:
     path: "{{ solita_jenkins_job_dsl_workspace }}/{{ item }}"
     state: absent

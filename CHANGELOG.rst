@@ -2,6 +2,12 @@
 Changelog
 =========
 
+----------
+Git master
+----------
+
+- Fix permission issues due to missing ``become`` options.
+
 --------------------------
 Version 1.0.2 (2016-07-03)
 --------------------------
