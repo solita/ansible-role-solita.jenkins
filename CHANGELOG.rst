@@ -16,6 +16,10 @@ Git master
   ``jenkins``. This way all Ansible users have access to the key added to the
   ``solita_jenkins`` Jenkins user.
 
+- Don't change ``solita_jenkins``' password when the default password changes
+  (e.g. when ``solita_jenkins_default_password/solita_jenkins`` is deleted or
+  the host is provisioned from another Ansible control machine).
+
 --------------------------
 Version 1.0.2 (2016-07-03)
 --------------------------

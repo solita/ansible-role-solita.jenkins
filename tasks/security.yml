@@ -20,7 +20,27 @@
     - icon-shim
     - matrix-auth
 
-- name: Copy Jenkins security realm configuration
+- name: Create solita_jenkins password file
+  become: yes
+  copy:
+    content: >
+      {{ lookup("password", solita_jenkins_password_dir + "/solita_jenkins") }}
+    dest: /var/lib/jenkins/solita_jenkins_password
+    owner: jenkins
+    group: jenkins
+    mode: 0600
+    force: no
+
+- name: Read solita_jenkins password file
+  become: yes
+  command: cat /var/lib/jenkins/solita_jenkins_password
+  register: cat_password
+  changed_when: False
+
+- set_fact:
+    solita_jenkins_password: "{{ cat_password.stdout }}"
+
+- name: Create Jenkins security realm configuration script
   become: yes
   template:
     src: solita_jenkins_security_realm.groovy.j2

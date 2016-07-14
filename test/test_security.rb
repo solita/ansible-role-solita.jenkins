@@ -117,4 +117,49 @@ class TestSecurity < Minitest::Test
     assert_equal ['admin', 'xyz'].to_set, list_users
   end
 
+  # solita_jenkins password doesn't change even if a new default password is
+  # generated.
+  def test_keep_solita_jenkins_password
+    # Disable security.
+    ansible_playbook '--tags solita_jenkins_security', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_security_realm: none
+      roles:
+        - solita.jenkins
+    EOF
+
+    # Set "foo" as the default password.
+    system 'echo foo >environments/vagrant/solita_jenkins_default_password/solita_jenkins'
+
+    # Enable security.
+    ansible_playbook '--tags solita_jenkins_security', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_security_realm: jenkins
+      roles:
+        - solita.jenkins
+    EOF
+    system 'sudo cat /var/lib/jenkins/init.groovy.d/solita_jenkins_security_realm.groovy >/tmp/realm1.groovy'
+
+    # Set "bar" as the default password.
+    system 'echo bar >environments/vagrant/solita_jenkins_default_password/solita_jenkins'
+
+    # Re-configure security.
+    ansible_playbook '--tags solita_jenkins_security', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_security_realm: jenkins
+      roles:
+        - solita.jenkins
+    EOF
+    system 'sudo cat /var/lib/jenkins/init.groovy.d/solita_jenkins_security_realm.groovy >/tmp/realm2.groovy'
+
+    # The security configuration should not change.
+    assert_equal File.read('/tmp/realm1.groovy'), File.read('/tmp/realm2.groovy')
+  end
+
 end
