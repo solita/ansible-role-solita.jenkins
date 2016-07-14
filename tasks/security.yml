@@ -13,7 +13,7 @@
     dest: /var/lib/jenkins/plugins
     owner: jenkins
     group: jenkins
-    mode: 0755
+    mode: 0644
   register: matrix_auth_plugin
   with_items:
     - icon-shim
