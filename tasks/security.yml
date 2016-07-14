@@ -19,24 +19,6 @@
     - icon-shim
     - matrix-auth
 
-- name: Create init.groovy.d
-  become: yes
-  file:
-    path: /var/lib/jenkins/init.groovy.d
-    state: directory
-    owner: jenkins
-    group: jenkins
-    mode: 0755
-
-- name: Disable Jenkins setup wizard
-  become: yes
-  copy:
-    dest: /var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
-    content: 2.0
-    owner: jenkins
-    group: jenkins
-    mode: 0755
-
 - name: Copy Jenkins security realm configuration
   become: yes
   template:
@@ -44,7 +26,7 @@
     dest: /var/lib/jenkins/init.groovy.d/solita_jenkins_security_realm.groovy
     owner: jenkins
     group: jenkins
-    mode: 0755
+    mode: 0700
   register: security_realm
 
 - name: Set the TCP port for JNLP agents

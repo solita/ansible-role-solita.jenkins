@@ -8,6 +8,7 @@ Git master
 
 - Fix permission issues due to missing ``become`` options.
 - Try to work around ``inventory_dir`` being ``None`` (`#14`_).
+- Upgrade ``geerlingguy.jenkins`` to ``2.2.0``.
 
 --------------------------
 Version 1.0.2 (2016-07-03)
