@@ -1,12 +1,13 @@
 ---
-- name: Create an SSH key for the Unix user
-  user: name={{ ansible_user_id }} generate_ssh_key=yes
+- name: Create an SSH key for the jenkins Unix user
+  become: yes
+  user: name=jenkins generate_ssh_key=yes
   register: user
 
 - set_fact:
     solita_jenkins_public_key: "{{ user.ssh_public_key }}"
 
-- name: Install matrix-auth plugin and its dependencies
+- name: Install the matrix-auth plugin and its dependencies
   become: yes
   get_url:
     url: "http://updates.jenkins-ci.org/latest/{{ item }}.hpi"
@@ -50,14 +51,14 @@
 
 - name: Add present Jenkins users
   solita_jenkins_user:
-    jenkins_url: "{{ solita_jenkins_url }}"
+    solita_jenkins_cli: "{{ solita_jenkins_cli }}"
     name: "{{ item }}"
     password: "{{ lookup('password', solita_jenkins_password_dir + '/' + item) }}"
   with_items: "{{ solita_jenkins_users }}"
 
 - name: Remove absent Jenkins users
   solita_jenkins_user:
-    jenkins_url: "{{ solita_jenkins_url }}"
+    solita_jenkins_cli: "{{ solita_jenkins_cli }}"
     name: "{{ item }}"
     state: absent
   with_items: "{{ solita_jenkins_absent_users }}"

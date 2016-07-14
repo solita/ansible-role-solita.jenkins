@@ -50,15 +50,19 @@ import json
 def main():
     module = AnsibleModule(
         argument_spec = dict(
-            jenkins_url=dict(type='str', required=True),
+            solita_jenkins_cli=dict(type='str', required=True),
             name=dict(type='str', required=True),
             state=dict(choices=['present', 'absent'], default='present'),
             password=dict(type='str')
         )
     )
 
-    rc, stdout, stderr = module.run_command("java -jar /opt/jenkins-cli.jar -s '%(jenkins_url)s' groovy =" % module.params,
-                                            data=(SCRIPT % json.dumps(module.params)))
+    script_args_json = json.dumps(dict(name=module.params["name"],
+                                       state=module.params["state"],
+                                       password=module.params["password"]))
+
+    rc, stdout, stderr = module.run_command("%(solita_jenkins_cli)s groovy =" % module.params,
+                                            data=(SCRIPT % script_args_json))
     if (rc != 0):
         module.fail_json(msg=stderr)
 
