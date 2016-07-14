@@ -1,9 +1,10 @@
-# We can't leave this up to geerlingguy.jenkins until
-# https://github.com/geerlingguy/ansible-role-jenkins/issues/50 is resolved.
+# We can't leave this up to geerlingguy.jenkins because it always restarts
+# Jenkins after installing new plugins, and we only want to do that with
+# solita_jenkins_restart: yes.
 ---
 - name: Install Jenkins plugins.
   command: >
-    java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix | default('') }}/ install-plugin {{ item }}
+    {{ solita_jenkins_cli }} install-plugin {{ item }}
     creates=/var/lib/jenkins/plugins/{{ item }}.jpi
   with_items: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"
   register: plugins

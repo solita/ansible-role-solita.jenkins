@@ -7,37 +7,38 @@
     solita_jenkins_public_key: "{{ user.ssh_public_key }}"
 
 - name: Install matrix-auth plugin and its dependencies
+  become: yes
   get_url:
     url: "http://updates.jenkins-ci.org/latest/{{ item }}.hpi"
     dest: /var/lib/jenkins/plugins
     owner: jenkins
     group: jenkins
     mode: 0755
-  become: yes
   register: matrix_auth_plugin
   with_items:
     - icon-shim
     - matrix-auth
 
 - name: Create init.groovy.d
+  become: yes
   file:
     path: /var/lib/jenkins/init.groovy.d
     state: directory
     owner: jenkins
     group: jenkins
     mode: 0755
-  become: yes
 
 - name: Disable Jenkins setup wizard
+  become: yes
   copy:
     dest: /var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
     content: 2.0
     owner: jenkins
     group: jenkins
     mode: 0755
-  become: yes
 
 - name: Copy Jenkins security realm configuration
+  become: yes
   template:
     src: solita_jenkins_security_realm.groovy.j2
     dest: /var/lib/jenkins/init.groovy.d/solita_jenkins_security_realm.groovy
@@ -45,16 +46,15 @@
     group: jenkins
     mode: 0755
   register: security_realm
-  become: yes
 
 - name: Set the TCP port for JNLP agents
+  become: yes
   lineinfile:
     dest: /var/lib/jenkins/config.xml
     regexp: "^(\\s*)<slaveAgentPort>"
     line: "\\1<slaveAgentPort>{{ solita_jenkins_jnlp_port }}</slaveAgentPort>"
     backrefs: yes
   register: jnlp_port
-  become: yes
 
 - include: restart.yml
   when: (matrix_auth_plugin | changed) or (security_realm | changed) or (jnlp_port | changed)

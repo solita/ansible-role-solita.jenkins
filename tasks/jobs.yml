@@ -87,5 +87,6 @@
   register: remove_old_scripts
 
 - name: Run the Job DSL scripts
-  shell: "java -jar {{ jenkins_jar_location }} -s '{{ solita_jenkins_url }}/' build job-dsl -s -v"
+  shell: >
+    {{ solita_jenkins_cli }} build job-dsl -s -v
   when: ((scripts | length > 0) or (templates | length > 0)) and ((copy_scripts | changed) or (copy_templates | changed) or (remove_old_scripts | changed))

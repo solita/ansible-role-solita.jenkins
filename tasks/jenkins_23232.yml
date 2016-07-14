@@ -1,12 +1,12 @@
 # Work around https://issues.jenkins-ci.org/browse/JENKINS-23232
 ---
 - name: Work around JENKINS-23232
+  become: yes
   lineinfile:
     dest: "{{ jenkins_init_file }}"
     line: JAVA_ARGS+=' -Dhudson.diyChunking=false'
     insertafter: JAVA_ARGS=
   register: init_file
-  become: yes
 
 - include: restart.yml
   when: init_file | changed

@@ -1,8 +1,8 @@
 ---
 - block:
     - name: Restart Jenkins
-      service: name=jenkins state=restarted
       become: yes
+      service: name=jenkins state=restarted
 
     # Stolen from geerlingguy.jenkins.
     - name: Wait for Jenkins to start up before proceeding.
