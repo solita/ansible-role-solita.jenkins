@@ -20,6 +20,10 @@ Git master
   (e.g. when ``solita_jenkins_default_password/solita_jenkins`` is deleted or
   the host is provisioned from another Ansible control machine).
 
+- Fix idempotence issues.
+
+- Don't make files containing ``solita_jenkins``' password world-readable.
+
 --------------------------
 Version 1.0.2 (2016-07-03)
 --------------------------
