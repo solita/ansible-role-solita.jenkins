@@ -6,6 +6,10 @@ Changelog
 Git master
 ----------
 
+--------------------------
+Version 1.1.0 (2016-07-15)
+--------------------------
+
 - Fix permission issues due to missing ``become`` options.
 
 - Try to work around ``inventory_dir`` being ``None`` (`#14`_).
