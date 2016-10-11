@@ -6,6 +6,8 @@ Changelog
 Git master
 ----------
 
+- Upgrade ``geerlingguy.jenkins`` to ``2.5.0``.
+
 --------------------------
 Version 1.1.0 (2016-07-15)
 --------------------------
