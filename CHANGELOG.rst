@@ -8,6 +8,9 @@ Git master
 
 - Upgrade ``geerlingguy.jenkins`` to ``2.5.0``.
 
+- Stop Jenkins to create ``config.xml`` if it's missing. This can happen if the
+  role execution installs and starts Jenkins for the first time.
+
 --------------------------
 Version 1.1.0 (2016-07-15)
 --------------------------

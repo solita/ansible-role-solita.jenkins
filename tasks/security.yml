@@ -50,6 +50,15 @@
     mode: 0700
   register: security_realm
 
+- name: Check if config.xml exists
+  stat:
+    path: /var/lib/jenkins/config.xml
+  register: config_xml
+
+- name: Stop Jenkins to create config.xml
+  service: name=jenkins state=stopped
+  when: solita_jenkins_restart and (not config_xml.stat.exists)
+
 - name: Set the TCP port for JNLP agents
   become: yes
   lineinfile:
