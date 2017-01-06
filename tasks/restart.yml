@@ -1,5 +1,6 @@
 ---
-- block:
+- when: solita_jenkins_restart
+  block:
     - name: Restart Jenkins
       become: yes
       service: name=jenkins state=restarted
@@ -14,5 +15,3 @@
       retries: "{{ jenkins_connection_retries }}"
       delay: "{{ jenkins_connection_delay }}"
       changed_when: false
-
-  when: solita_jenkins_restart
