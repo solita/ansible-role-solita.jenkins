@@ -1,6 +1,4 @@
 ---
-- include: jenkins_23232.yml
-
 - include: security.yml
   tags: solita_jenkins_security
 
