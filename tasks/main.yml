@@ -37,5 +37,8 @@
     {{ solita_jenkins_cli }} reload-job job-dsl
   when: update_job_dsl_job | changed
 
+- include: credentials.yml
+  tags: solita_jenkins_credentials
+
 - include: jobs.yml
   tags: solita_jenkins_jobs

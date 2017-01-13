@@ -6,3 +6,4 @@ solita_jenkins_jobs_dir: "{{ playbook_dir }}/jobs"
 solita_jenkins_security_realm: jenkins
 solita_jenkins_jnlp_port: 0
 solita_jenkins_restart: yes
+solita_jenkins_credentials: []
