@@ -55,3 +55,4 @@ Version 1.0.0 (2016-06-29)
 - Add support for Jenkins 2.
 
 .. _#14: https://github.com/solita/ansible-role-solita.jenkins/issues/14
+.. _#17: https://github.com/solita/ansible-role-solita.jenkins/issues/17
