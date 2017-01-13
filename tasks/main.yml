@@ -3,6 +3,7 @@
   tags: solita_jenkins_security
 
 - include: plugins.yml
+  tags: solita_jenkins_plugins
 
 # Copy job-dsl-config.xml to server so we can use Jenkins CLI to create a new
 # job from it.

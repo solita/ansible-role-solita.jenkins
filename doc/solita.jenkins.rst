@@ -87,6 +87,8 @@ To add plugins to your Jenkins installation, list their plugin IDs in the variab
 
     This role depends on the `Job DSL plugin`_ and always installs it.
 
+To limit role application to plugins, use the tag ``solita_jenkins_plugins``.
+
 Examples
 ========
 
