@@ -11,6 +11,8 @@ Git master
 - Stop Jenkins to create ``config.xml`` if it's missing. This can happen if the
   role execution installs and starts Jenkins for the first time.
 
+- Add tag ``solita_jenkins_jobs`` (`#17`_).
+
 --------------------------
 Version 1.1.0 (2016-07-15)
 --------------------------
