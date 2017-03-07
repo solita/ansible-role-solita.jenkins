@@ -28,7 +28,10 @@ if (solita_jenkins_security_realm == 'jenkins') {
     // If we leave the user, further attempts to use jenkins-cli.jar with
     // key-based authentication enabled fail for some reason. Clearing the
     // user's SSH key wasn't enough to solve the problem.
-    jenkins.getUser('solita_jenkins').delete()
+    solita_jenkins_user = jenkins.getUser('solita_jenkins')
+    if (solita_jenkins_user) {
+        solita_jenkins_user.delete()
+    }
     jenkins.disableSecurity()
 }
 jenkins.save()
