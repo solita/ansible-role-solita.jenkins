@@ -80,6 +80,13 @@ module TestHelper
       .delete('solita_jenkins')
   end
 
+  def list_credentials
+    @agent.get('http://localhost:8081/jenkins/credentials/store/system/domain/_/')\
+      .search('table:first-of-type tr td:nth-of-type(2)')\
+      .map { |n| n.text } \
+      .to_set
+  end
+
   def list_jobs
     @agent.get('http://localhost:8081/jenkins')\
       .search('table#projectstatus>tr>td:nth-child(3)')\
