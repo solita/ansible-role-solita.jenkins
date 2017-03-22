@@ -13,7 +13,6 @@ class TestCredentials < Minitest::Test
     ---
     - hosts: vagrant
       vars:
-        solita_jenkins_security_realm: none
         solita_jenkins_credentials:
           foo:
             username: foouser
@@ -53,6 +52,36 @@ class TestCredentials < Minitest::Test
                   ].to_set, list_credentials
   end
 
+  # New SSH key credentials are added if they are missing.
+  def test_add_ssh_key
+    ansible_playbook '--tags solita_jenkins_credentials', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_absent_credentials:
+          - foo
+          - bar
+          - xyz
+      roles:
+        - solita.jenkins
+    EOF
+    ansible_playbook '--tags solita_jenkins_credentials', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_credentials:
+          foo:
+            username: foouser
+            private_key: fookey
+            passphrase: foopass
+            description: foodesc
+      roles:
+        - solita.jenkins
+    EOF
+    login_as 'solita_jenkins'
+    assert_equal ['foouser (foodesc)'].to_set, list_credentials
+  end
+
   # Credentials listed in solita_jenkins_absent_credentials are removed if they
   # are present. Unlisted credentials are not modified.
   def test_remove_credentials
@@ -61,7 +90,6 @@ class TestCredentials < Minitest::Test
     ---
     - hosts: vagrant
       vars:
-        solita_jenkins_security_realm: none
         solita_jenkins_credentials:
           foo:
             username: foouser
@@ -91,6 +119,47 @@ class TestCredentials < Minitest::Test
     # removed.
     login_as 'solita_jenkins'
     assert_equal ['xyzuser/****** (xyzdesc)'].to_set, list_credentials
+  end
+
+  # Existing credentials can be changed.
+  focus
+  def test_change_credentials
+    # Foo is a password, bar is an SSH key.
+    ansible_playbook '--tags solita_jenkins_credentials', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_credentials:
+          foo:
+            username: foouser
+            password: foopass
+          bar:
+            username: baruser
+            private_key: barkey
+        solita_jenkins_absent_credentials:
+          - xyz
+      roles:
+        - solita.jenkins
+    EOF
+    # Change foo into an SSH key and bar into a password.
+    ansible_playbook '--tags solita_jenkins_credentials', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_credentials:
+          foo:
+            username: foouser
+            private_key: fookey
+          bar:
+            username: baruser
+            password: barpass
+        solita_jenkins_absent_credentials:
+          - xyz
+      roles:
+        - solita.jenkins
+    EOF
+    login_as 'solita_jenkins'
+    assert_equal ['foouser', 'baruser/******'].to_set, list_credentials
   end
 
 end
