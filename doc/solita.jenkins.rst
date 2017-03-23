@@ -60,16 +60,13 @@ Installation
 
 .. highlight:: yaml
 
-You can install this role and its dependencies with ansible-galaxy_. First add the following lines to your ``requirements.yml``:
+You can install this role and its dependencies with ansible-galaxy_. First add the following lines to your ``requirements.yml``::
 
-.. code-block:: yaml
-   :emphasize-lines: 3-4
-
-   # requirements.yml
-   ---
-   - src: https://github.com/solita/ansible-role-solita.jenkins.git
-     version: v1.1.0
-     name: solita.jenkins
+    # requirements.yml
+    ---
+    - src: https://github.com/solita/ansible-role-solita.jenkins.git
+      version: v1.2.0
+      name: solita.jenkins
 
 .. highlight:: sh
 

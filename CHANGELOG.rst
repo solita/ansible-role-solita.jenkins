@@ -6,6 +6,10 @@ Changelog
 Git master
 ----------
 
+--------------------------
+Version 1.2.0 (2017-03-23)
+--------------------------
+
 - Add credential management.
 
 - Upgrade ``geerlingguy.jenkins`` to ``2.5.0``.
