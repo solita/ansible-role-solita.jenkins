@@ -35,7 +35,7 @@ With this role and the `Job DSL plugin`_, your entire Jenkins configuration can 
         solita_jenkins_absent_users:
           - eve
       roles:
-         - solita.jenkins
+        - solita.jenkins
 
 .. highlight:: groovy
 
@@ -106,7 +106,7 @@ Install the ``timestamper`` and ``git`` plugins:
           - timestamper
           - git
       roles:
-         - solita.jenkins
+        - solita.jenkins
 
 .. _solita.jenkins_security:
 
@@ -157,7 +157,7 @@ Enable security, add users ``alice`` and ``bob``, and remove user ``eve``::
         solita_jenkins_absent_users:
           - eve
       roles:
-         - solita.jenkins
+        - solita.jenkins
 
 Disable security::
 
@@ -167,7 +167,7 @@ Disable security::
       vars:
         solita_jenkins_security_realm: none
       roles:
-         - solita.jenkins
+        - solita.jenkins
 
 .. highlight:: sh
 
@@ -205,7 +205,7 @@ If you create your script in the default location, no configuration is needed::
     ---
     - hosts: jenkins-server
       roles:
-         - solita.jenkins
+        - solita.jenkins
 
 .. highlight:: groovy
 
@@ -226,7 +226,7 @@ If you want to place your scripts somewhere else, set the variable ``solita_jenk
       vars:
         solita_jenkins_jobs_dir: "{{ playbook_dir }}/files/jenkins/jobs"
       roles:
-         - solita.jenkins
+        - solita.jenkins
 
 .. highlight:: sh
 
