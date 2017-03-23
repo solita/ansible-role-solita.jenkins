@@ -6,6 +6,8 @@ Changelog
 Git master
 ----------
 
+- Add credential management.
+
 - Upgrade ``geerlingguy.jenkins`` to ``2.5.0``.
 
 - Stop Jenkins to create ``config.xml`` if it's missing. This can happen if the
