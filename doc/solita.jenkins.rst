@@ -23,7 +23,7 @@ With this role and the `Job DSL plugin`_, your entire Jenkins configuration can 
 
     # playbook.yml
     ---
-    - hosts: servers
+    - hosts: jenkins-server
       vars:
         solita_jenkins_plugins:
           - timestamper
@@ -100,7 +100,7 @@ Install the ``timestamper`` and ``git`` plugins:
 
     # playbook.yml
     ---
-    - hosts: servers
+    - hosts: jenkins-server
       vars:
         solita_jenkins_plugins:
           - timestamper
@@ -148,7 +148,7 @@ Enable security, add users ``alice`` and ``bob``, and remove user ``eve``::
 
     # playbook.yml
     ---
-    - hosts: servers
+    - hosts: jenkins-server
       vars:
         solita_jenkins_security_realm: jenkins
         solita_jenkins_users:
@@ -163,7 +163,7 @@ Disable security::
 
     # playbook.yml
     ---
-    - hosts: servers
+    - hosts: jenkins-server
       vars:
         solita_jenkins_security_realm: none
       roles:
@@ -203,7 +203,7 @@ If you create your script in the default location, no configuration is needed::
 
     # playbook.yml
     ---
-    - hosts: servers
+    - hosts: jenkins-server
       roles:
          - solita.jenkins
 
@@ -222,7 +222,7 @@ If you want to place your scripts somewhere else, set the variable ``solita_jenk
 
     # playbook.yml
     ---
-    - hosts: servers
+    - hosts: jenkins-server
       vars:
         solita_jenkins_jobs_dir: "{{ playbook_dir }}/files/jenkins/jobs"
       roles:
