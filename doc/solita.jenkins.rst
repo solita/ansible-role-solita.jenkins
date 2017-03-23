@@ -173,7 +173,7 @@ Disable security::
 
 Only update security settings and users::
 
-    ansible-playbook -i environments/vagrant/inventory playbook.yml --tags solita_jenkins_security
+    ansible-playbook playbook.yml --tags solita_jenkins_security
 
 --------------
 Jobs and Views
@@ -232,7 +232,7 @@ If you want to place your scripts somewhere else, set the variable ``solita_jenk
 
 Only update jobs and views::
 
-    ansible-playbook -i environments/vagrant/inventory playbook.yml --tags solita_jenkins_jobs
+    ansible-playbook playbook.yml --tags solita_jenkins_jobs
 
 .. _geerlingguy.jenkins: https://galaxy.ansible.com/detail#/role/440
 .. _the upstream role: geerlingguy.jenkins_
