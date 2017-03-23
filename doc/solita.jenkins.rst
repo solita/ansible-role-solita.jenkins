@@ -175,6 +175,85 @@ Only update security settings and users::
 
     ansible-playbook playbook.yml --tags solita_jenkins_security
 
+-----------
+Credentials
+-----------
+
+The Jenkins `credentials plugin`_ allows you to store credentials in Jenkins. This role allows you to add, change and remove those credentials.
+
+Managing Credentials
+====================
+
+.. highlight:: sh
+
+You should never store credentials in your regular playbooks or inventories. Instead use `Ansible Vault`_ to create an encrypted file for them::
+
+    # Create a new encrypted file:
+    ansible-vault create group_vars/all/credentials
+
+    # Edit an existing encrypted file:
+    ansible-vault edit group_vars/all/credentials
+
+.. highlight:: yaml
+
+To add or modify credentials, add them to ``solita_jenkins_credentials``, which is a map from credential ID to the credential itself. To remove credentials, list their IDs in ``solita_jenkins_absent_credentials``.
+
+Examples
+========
+
+Add a username/password credential with the ID ``alice``, and an SSH key with
+the id ``bob``::
+
+    # Encrypted var file
+    ---
+    solita_jenkins_credentials:
+      alice:
+        username: alice
+        password: swordfish
+        description: Alice's password       # Optional
+
+      bob:
+        username: bob                       # Optional
+        private_key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIJKgIBAAKCAgEAr959S9hp6tUFqrVzxs31+vYZWyKHia9SBWtmRthDlO/uMnr/
+          VoEnRVqUmjlJcgSMhIl7d5Daqkc8sxMjzipklD6ZvIliQRsiEMePuIQs5i8/u9jO
+          ...
+          gTUbb3MzN7f+G2zihIl5uu8Lp7hzeRnvJ6tP3jeVPog9SRcX6Ve8kZr/T+chVQ4t
+          da0O2tRUD1uRrlEovhL3PQT2fTzkV8F4YEOl5afVopLb1fK6sDef2i0jr1P0vw==
+          -----END RSA PRIVATE KEY-----
+        passphrase: swordfish               # Optional
+        description: Bob's SSH Key          # Optional
+
+::
+
+    # playbook.yml
+    ---
+    - hosts: jenkins-server
+      roles:
+        - solita.jenkins
+
+.. note ::
+
+    Use YAML's pipe syntax to keep the linebreaks in the private key.
+
+Remove the credentials with the ID ``eve``::
+
+    # playbook.yml
+    ---
+    - hosts: jenkins-server
+      vars:
+        solita_jenkins_absent_credentials:
+          - eve
+      roles:
+        - solita.jenkins
+
+.. highlight:: sh
+
+Only update credentials::
+
+    ansible-playbook playbook.yml --tags solita_jenkins_credentials
+
 --------------
 Jobs and Views
 --------------
@@ -241,3 +320,5 @@ Only update jobs and views::
 .. _Job DSL plugin: `Job DSL`_
 .. _Ansible variables: http://docs.ansible.com/ansible/playbooks_variables.html
 .. _Jinja2 template: http://docs.ansible.com/ansible/playbooks_variables.html#using-variables-about-jinja2
+.. _credentials plugin: https://wiki.jenkins-ci.org/display/JENKINS/Credentials+Plugin
+.. _Ansible Vault: https://docs.ansible.com/ansible/playbooks_vault.html
