@@ -30,15 +30,18 @@
     group: jenkins
     mode: 0600
     force: no
+  tags: always
 
 - name: Read solita_jenkins password file
   become: yes
   command: cat /var/lib/jenkins/solita_jenkins_password
   register: cat_password
   changed_when: False
+  tags: always
 
 - set_fact:
     solita_jenkins_password: "{{ cat_password.stdout }}"
+  tags: always
 
 - name: Create Jenkins security realm configuration script
   become: yes

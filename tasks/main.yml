@@ -18,6 +18,7 @@
 - name: Create the job-dsl job
   shell: >
     {{ solita_jenkins_cli }} create-job job-dsl </var/lib/jenkins/job-dsl-config.xml
+  no_log: yes
   args:
     creates: /var/lib/jenkins/jobs/job-dsl/config.xml
   register: create_job_dsl_job
@@ -35,6 +36,7 @@
 - name: Reload the job-dsl job
   command: >
     {{ solita_jenkins_cli }} reload-job job-dsl
+  no_log: yes
   when: update_job_dsl_job | changed
 
 - include: credentials.yml
