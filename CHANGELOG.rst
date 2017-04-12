@@ -6,6 +6,8 @@ Changelog
 Git master
 ----------
 
+- Remove unnecessary ``no_log``.
+
 --------------------------
 Version 1.2.1 (2017-04-12)
 --------------------------
