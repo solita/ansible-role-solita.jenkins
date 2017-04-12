@@ -65,7 +65,7 @@ You can install this role and its dependencies with ansible-galaxy_. First add t
     # requirements.yml
     ---
     - src: https://github.com/solita/ansible-role-solita.jenkins.git
-      version: v1.2.0
+      version: v1.2.1
       name: solita.jenkins
 
 .. highlight:: sh
