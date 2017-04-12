@@ -1,6 +1,15 @@
 ---
 - hosts: vagrant
 
+  vars:
+    java_packages:
+      - openjdk-8-jdk
+
+  pre_tasks:
+    - name: Add JDK 8 PPA
+      apt_repository: repo='ppa:openjdk-r/ppa'
+      become: yes
+
   # The unit tests expect that a basic installation is present, because they
   # limit the role application to the part they're testing with tags.
   roles:
