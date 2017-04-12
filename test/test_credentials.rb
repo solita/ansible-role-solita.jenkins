@@ -122,7 +122,6 @@ class TestCredentials < Minitest::Test
   end
 
   # Existing credentials can be changed.
-  focus
   def test_change_credentials
     # Foo is a password, bar is an SSH key.
     ansible_playbook '--tags solita_jenkins_credentials', <<-EOF
