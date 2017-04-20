@@ -207,7 +207,7 @@ the id ``bob``::
       alice:
         username: alice
         password: swordfish
-        description: Alice's password       # Optional
+        description: Alices password        # Optional
 
       bob:
         username: bob                       # Optional
@@ -220,7 +220,7 @@ the id ``bob``::
           da0O2tRUD1uRrlEovhL3PQT2fTzkV8F4YEOl5afVopLb1fK6sDef2i0jr1P0vw==
           -----END RSA PRIVATE KEY-----
         passphrase: swordfish               # Optional
-        description: Bob's SSH Key          # Optional
+        description: Bobs SSH Key           # Optional
 
 ::
 
@@ -229,6 +229,10 @@ the id ``bob``::
     - hosts: jenkins-server
       roles:
         - solita.jenkins
+
+.. note ::
+
+    Currently you can't use apostrophes (') in the credentials (`#23`_).
 
 .. note ::
 
@@ -319,3 +323,4 @@ Only update jobs and views::
 .. _Jinja2 template: http://docs.ansible.com/ansible/playbooks_variables.html#using-variables-about-jinja2
 .. _credentials plugin: https://wiki.jenkins-ci.org/display/JENKINS/Credentials+Plugin
 .. _Ansible Vault: https://docs.ansible.com/ansible/playbooks_vault.html
+.. _#23: https://github.com/solita/ansible-role-solita.jenkins/issues/23
