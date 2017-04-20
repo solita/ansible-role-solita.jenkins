@@ -76,7 +76,7 @@
 
 - name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
   fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
-  when: ({{ item }} | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
+  when: (item | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
   with_items:
     - solita_jenkins_users
     - solita_jenkins_absent_users
