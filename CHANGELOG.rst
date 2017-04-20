@@ -10,6 +10,8 @@ Git master
 
 - Fix warning for template delimiters in a when statement (`#24`_).
 
+- Allow overriding ``solita_jenkins_password_dir``.
+
 --------------------------
 Version 1.2.1 (2017-04-12)
 --------------------------

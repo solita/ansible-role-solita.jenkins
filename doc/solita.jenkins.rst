@@ -134,6 +134,10 @@ To add and remove users, add their usernames to the lists ``solita_jenkins_users
 
 When a new user is created, the user's default password will be read from the file ``solita_jenkins_default_password/<username>`` in the inventory directory. If the file does not exist, a file containing a random password is created. For example, if your inventory file is ``environments/vagrant/inventory`` and you add the user ``alice``, you can find their default password in the file ``environments/vagrant/solita_jenkins_default_password/alice``.
 
+.. note ::
+
+    If you don't have an inventory file (e.g. if you create the servers using the `Ansible cloudformation module`_), ``solita.jenkins`` will try to write the generated passwords into ``/etc/ansible/solita_jenkins_default_password/`` and fail. In this case you can set the variable ``solita_jenkins_password_dir`` to the directory where you want to place the passwords.
+
 To limit role application to security settings and user management, use the tag ``solita_jenkins_security``.
 
 Examples
@@ -171,6 +175,10 @@ Disable security::
 Only update security settings and users::
 
     ansible-playbook playbook.yml --tags solita_jenkins_security
+
+Place the generated passwords in ``/tmp/default-passwords``::
+
+    ansible-playbook playbook.yml -e solita_jenkins_password_dir=/tmp/default-passwords
 
 -----------
 Credentials
@@ -324,3 +332,4 @@ Only update jobs and views::
 .. _credentials plugin: https://wiki.jenkins-ci.org/display/JENKINS/Credentials+Plugin
 .. _Ansible Vault: https://docs.ansible.com/ansible/playbooks_vault.html
 .. _#23: https://github.com/solita/ansible-role-solita.jenkins/issues/23
+.. _`Ansible cloudformation module`: https://docs.ansible.com/ansible/cloudformation_module.html
