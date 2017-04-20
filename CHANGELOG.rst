@@ -6,6 +6,10 @@ Changelog
 Git master
 ----------
 
+--------------------------
+Version 1.3.0 (2017-04-20)
+--------------------------
+
 - Remove unnecessary ``no_log``.
 
 - Fix warning for template delimiters in a when statement (`#24`_).
