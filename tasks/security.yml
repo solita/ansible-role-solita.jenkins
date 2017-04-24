@@ -71,8 +71,19 @@
     backrefs: yes
   register: jnlp_port
 
+- name: Configure Authorize Project plugin
+  become: yes
+  copy:
+    src: jenkins.security.QueueItemAuthenticatorConfiguration.xml
+    dest: /var/lib/jenkins/jenkins.security.QueueItemAuthenticatorConfiguration.xml
+    owner: jenkins
+    group: jenkins
+    mode: u=rw,go=r
+    force: no
+  register: authorize_project
+
 - include: restart.yml
-  when: (matrix_auth_plugin | changed) or (security_realm | changed) or (jnlp_port | changed)
+  when: (matrix_auth_plugin | changed) or (security_realm | changed) or (jnlp_port | changed) or (authorize_project | changed)
 
 - name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
   fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"

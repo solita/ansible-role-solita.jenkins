@@ -1,9 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Runs the project's Job DSL scripts</description>
+  <description>Runs the project&apos;s Job DSL scripts</description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <org.jenkinsci.plugins.authorizeproject.AuthorizeProjectProperty plugin="authorize-project@1.3.0">
+      <strategy class="org.jenkinsci.plugins.authorizeproject.strategy.SpecificUsersAuthorizationStrategy">
+        <userid>solita_jenkins</userid>
+        <dontRestrictJobConfiguration>false</dontRestrictJobConfiguration>
+      </strategy>
+    </org.jenkinsci.plugins.authorizeproject.AuthorizeProjectProperty>
+  </properties>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
@@ -13,14 +20,17 @@
   <concurrentBuild>false</concurrentBuild>
   <customWorkspace>/var/lib/jenkins/jobs/job-dsl/workspace</customWorkspace>
   <builders>
-    <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.45">
+    <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.61">
       <targets>*.groovy</targets>
       <usingScriptText>false</usingScriptText>
+      <sandbox>true</sandbox>
       <ignoreExisting>false</ignoreExisting>
+      <ignoreMissingFiles>false</ignoreMissingFiles>
+      <failOnMissingPlugin>false</failOnMissingPlugin>
+      <unstableOnDeprecation>false</unstableOnDeprecation>
       <removedJobAction>DELETE</removedJobAction>
       <removedViewAction>DELETE</removedViewAction>
       <lookupStrategy>JENKINS_ROOT</lookupStrategy>
-      <additionalClasspath></additionalClasspath>
     </javaposse.jobdsl.plugin.ExecuteDslScripts>
   </builders>
   <publishers/>
