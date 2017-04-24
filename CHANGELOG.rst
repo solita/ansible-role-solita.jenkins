@@ -6,6 +6,10 @@ Changelog
 Git master
 ----------
 
+--------------------------
+Version 1.3.1 (2017-04-24)
+--------------------------
+
 - Add support for Job DSL 1.60.
 
 - Fix library modules to work with Python 3.
