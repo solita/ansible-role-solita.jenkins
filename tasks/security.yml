@@ -23,8 +23,7 @@
 - name: Create solita_jenkins password file
   become: yes
   copy:
-    content: >
-      {{ lookup("password", solita_jenkins_password_dir + "/solita_jenkins") }}
+    content: "{{ lookup('password', solita_jenkins_password_dir + '/solita_jenkins') }}"
     dest: /var/lib/jenkins/solita_jenkins_password
     owner: jenkins
     group: jenkins
@@ -41,6 +40,16 @@
 
 - set_fact:
     solita_jenkins_password: "{{ cat_password.stdout }}"
+  tags: always
+
+- name: Create solita_jenkins auth file
+  become: yes
+  copy:
+    content: "solita_jenkins:{{ solita_jenkins_password }}"
+    dest: /var/lib/jenkins/solita_jenkins_auth
+    owner: jenkins
+    group: jenkins
+    mode: 0600
   tags: always
 
 - name: Create Jenkins security realm configuration script

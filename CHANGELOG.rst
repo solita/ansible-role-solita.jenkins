@@ -12,11 +12,12 @@ Git master
 
 - Upgrade ``geerlingguy.jenkins`` to ``2.7.3``.
 
+- Use a password file and remove most ``no_log`` statements to aid in
+  debugging.
+
 --------------------------
 Version 1.3.0 (2017-04-20)
 --------------------------
-
-- Remove unnecessary ``no_log``.
 
 - Fix warning for template delimiters in a when statement (`#24`_).
 

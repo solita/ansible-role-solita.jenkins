@@ -6,7 +6,6 @@
   command: >
     {{ solita_jenkins_cli }} install-plugin {{ item }}
     creates=/var/lib/jenkins/plugins/{{ item }}.jpi
-  no_log: yes
   with_items: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"
   register: plugins
 

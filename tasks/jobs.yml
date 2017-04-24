@@ -89,5 +89,4 @@
 - name: Run the Job DSL scripts
   shell: >
     {{ solita_jenkins_cli }} build job-dsl -s -v
-  no_log: yes
   when: ((scripts | length > 0) or (templates | length > 0)) and ((copy_scripts | changed) or (copy_templates | changed) or (remove_old_scripts | changed))
