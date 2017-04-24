@@ -8,6 +8,8 @@ Git master
 
 - Add support for Job DSL 1.60.
 
+- Fix library modules to work with Python 3.
+
 --------------------------
 Version 1.3.0 (2017-04-20)
 --------------------------

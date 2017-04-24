@@ -19,3 +19,4 @@ Contributors
 - `Heikki Hokkanen <https://github.com/hoxu>`_
 - `Jukka Siivonen <https://github.com/jukkasi>`_
 - `bery <https://github.com/bery>`_
+- `Panu Kalliokoski <https://github.com/pkalliok>`_
