@@ -215,7 +215,7 @@ the id ``bob``::
       alice:
         username: alice
         password: swordfish
-        description: Alices password        # Optional
+        description: Alice's password       # Optional
 
       bob:
         username: bob                       # Optional
@@ -228,7 +228,7 @@ the id ``bob``::
           da0O2tRUD1uRrlEovhL3PQT2fTzkV8F4YEOl5afVopLb1fK6sDef2i0jr1P0vw==
           -----END RSA PRIVATE KEY-----
         passphrase: swordfish               # Optional
-        description: Bobs SSH Key           # Optional
+        description: Bob's SSH Key          # Optional
 
 ::
 
@@ -237,10 +237,6 @@ the id ``bob``::
     - hosts: jenkins-server
       roles:
         - solita.jenkins
-
-.. note ::
-
-    Currently you can't use apostrophes (') in the credentials (`#23`_).
 
 .. note ::
 

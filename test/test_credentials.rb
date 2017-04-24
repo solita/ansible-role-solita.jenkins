@@ -17,11 +17,11 @@ class TestCredentials < Minitest::Test
           foo:
             username: foouser
             password: foopass
-            description: foodesc
+            description: foo's desc
           xyz:
             username: xyzuser
             password: xyzpass
-            description: xyzdesc
+            description: xyz's desc
         solita_jenkins_absent_credentials:
           - bar
       roles:
@@ -36,19 +36,19 @@ class TestCredentials < Minitest::Test
           foo:
             username: foouser
             password: foopass
-            description: foodesc
+            description: foo's desc
           bar:
             username: baruser
             password: barpass
-            description: bardesc
+            description: bar's desc
       roles:
         - solita.jenkins
     EOF
     # Foo and xyz should remain present, and bar should be added.
     login_as 'solita_jenkins'
-    assert_equal ['foouser/****** (foodesc)',
-                  'baruser/****** (bardesc)',
-                  'xyzuser/****** (xyzdesc)',
+    assert_equal ["foouser/****** (foo's desc)",
+                  "baruser/****** (bar's desc)",
+                  "xyzuser/****** (xyz's desc)",
                   ].to_set, list_credentials
   end
 
@@ -74,12 +74,12 @@ class TestCredentials < Minitest::Test
             username: foouser
             private_key: fookey
             passphrase: foopass
-            description: foodesc
+            description: foo's desc
       roles:
         - solita.jenkins
     EOF
     login_as 'solita_jenkins'
-    assert_equal ['foouser (foodesc)'].to_set, list_credentials
+    assert_equal ["foouser (foo's desc)"].to_set, list_credentials
   end
 
   # Credentials listed in solita_jenkins_absent_credentials are removed if they
@@ -94,11 +94,11 @@ class TestCredentials < Minitest::Test
           foo:
             username: foouser
             password: foopass
-            description: foodesc
+            description: foo's desc
           xyz:
             username: xyzuser
             password: xyzpass
-            description: xyzdesc
+            description: xyz's desc
         solita_jenkins_absent_credentials:
           - bar
       roles:
@@ -118,7 +118,7 @@ class TestCredentials < Minitest::Test
     # Xyz should remain present, bar should remain absent, and foo should be
     # removed.
     login_as 'solita_jenkins'
-    assert_equal ['xyzuser/****** (xyzdesc)'].to_set, list_credentials
+    assert_equal ["xyzuser/****** (xyz's desc)"].to_set, list_credentials
   end
 
   # Existing credentials can be changed.
@@ -159,6 +159,29 @@ class TestCredentials < Minitest::Test
     EOF
     login_as 'solita_jenkins'
     assert_equal ['foouser', 'baruser/******'].to_set, list_credentials
+  end
+
+  # Special character's are escaped correctly.
+  def test_special_characters
+    # Foo is a password, bar is an SSH key.
+    ansible_playbook '--tags solita_jenkins_credentials', <<-EOF
+    ---
+    - hosts: vagrant
+      vars:
+        solita_jenkins_credentials:
+          foo:
+            username: foouser
+            password: foopass
+            description: "\\\\foo \\"' ${bar}"
+        solita_jenkins_absent_credentials:
+          - bar
+          - xyz
+      roles:
+        - solita.jenkins
+    EOF
+    login_as 'solita_jenkins'
+    assert_equal ["foouser/****** (\\foo \"' ${bar})",
+                  ].to_set, list_credentials
   end
 
 end
