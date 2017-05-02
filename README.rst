@@ -15,7 +15,7 @@ Development
 -------------
 
 Setup a test environment by running `vagrant up` in test directory.
-Execute `vagrant ssh` and then `rake` to run unit tests.
+Execute `vagrant ssh -c rake` to run unit tests.
 
 ------------
 Contributors
