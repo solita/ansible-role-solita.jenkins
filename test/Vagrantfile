@@ -4,7 +4,7 @@
 Vagrant.configure(2) do |config|
   config.vm.box = 'ubuntu/trusty64'
 
-  config.vm.synced_folder "..", "/solita.jenkins"
+  config.vm.synced_folder "..", "/solita.jenkins" , type: "rsync", rsync__exclude: ".git/"
   config.vm.network :forwarded_port, guest: 8081, host: 9080
 
   config.vm.provider 'virtualbox' do |v|
