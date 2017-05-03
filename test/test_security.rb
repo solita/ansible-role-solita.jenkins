@@ -130,7 +130,8 @@ class TestSecurity < Minitest::Test
         - solita.jenkins
     EOF
 
-    # Set "foo" as the default password.
+    # Copy the default password to safety and overwrite with "foo" as the default password.
+    system 'cp environments/vagrant/solita_jenkins_default_password/solita_jenkins /tmp/solita_jenkins.bak'
     system 'echo foo >environments/vagrant/solita_jenkins_default_password/solita_jenkins'
 
     # Enable security.
@@ -160,6 +161,9 @@ class TestSecurity < Minitest::Test
 
     # The security configuration should not change.
     assert_equal File.read('/tmp/realm1.groovy'), File.read('/tmp/realm2.groovy')
+
+    # login_as reads password from solita_jenkins_default_password, we'll need to restore it
+    system 'cp /tmp/solita_jenkins.bak environments/vagrant/solita_jenkins_default_password/solita_jenkins'
   end
 
 end
