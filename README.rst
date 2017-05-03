@@ -27,3 +27,4 @@ Contributors
 - `Jukka Siivonen <https://github.com/jukkasi>`_
 - `bery <https://github.com/bery>`_
 - `Panu Kalliokoski <https://github.com/pkalliok>`_
+- `Juha Jokimäki <https://github.com/jokimaki>`_
