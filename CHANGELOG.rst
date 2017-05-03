@@ -6,6 +6,9 @@ Changelog
 Git master
 ----------
 
+- Disable Job DSL Script Security by default for backwards compatibility with
+  scripts that use e.g. ``import``.
+
 --------------------------
 Version 1.3.1 (2017-04-24)
 --------------------------
