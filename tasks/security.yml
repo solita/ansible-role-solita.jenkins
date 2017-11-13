@@ -1,12 +1,4 @@
 ---
-- name: Create an SSH key for the jenkins Unix user
-  become: yes
-  user: name=jenkins generate_ssh_key=yes
-  register: user
-
-- set_fact:
-    solita_jenkins_public_key: "{{ user.ssh_public_key }}"
-
 - name: Install the matrix-auth plugin and its dependencies
   become: yes
   get_url:

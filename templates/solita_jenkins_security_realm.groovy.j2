@@ -19,7 +19,6 @@ if (solita_jenkins_security_realm == 'jenkins') {
 
     if (!('solita_jenkins' in currentUsers)) {
         def user = jenkins.getSecurityRealm().createAccount('solita_jenkins', '{{ solita_jenkins_password }}')
-        user.addProperty(new UserPropertyImpl('{{ solita_jenkins_public_key }}'));
         user.save()
 
         jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, 'solita_jenkins')

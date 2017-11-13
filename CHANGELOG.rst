@@ -6,6 +6,8 @@ Changelog
 Git master
 ----------
 
+- Don't create an SSH key for the ``jenkins`` user.
+
 --------------------------
 Version 1.3.2 (2017-05-03)
 --------------------------
