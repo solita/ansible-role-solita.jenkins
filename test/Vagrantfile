@@ -2,8 +2,9 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = 'ubuntu/trusty64'
-
+  #config.vm.box = 'bento/ubuntu-18.10'
+  config.vm.box = 'centos/7'
+  
   config.vm.synced_folder '..', '/solita.jenkins',
     owner: 'vagrant',
     group: 'vagrant',
@@ -18,12 +19,17 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: false, inline: <<-EOF
     set -e
 
-    # Install Ansible
-    sudo apt-get update
-    sudo apt-get install -y python-setuptools python-dev libffi-dev libssl-dev git
-    sudo -H easy_install -U pip
-    sudo -H pip install -U setuptools
-    sudo -H pip install ansible==2.2.1.0
+    # Install Ansible - Ubuntu
+    #sudo apt update
+    #sudo apt install -y software-properties-common
+    #sudo apt-add-repository ppa:ansible/ansible -y
+    #sudo apt update
+    #sudo apt install -y ansible
+    
+    # Install Ansible - Centos
+    sudo yum update -y
+    sudo yum install epel-release -y
+    sudo yum install ansible -y
 
     # Start new login shells in the /solita.jenkins/test directory
     echo 'cd /solita.jenkins/test' >> ~/.profile
@@ -34,6 +40,7 @@ Vagrant.configure(2) do |config|
 
     # Perform a basic installation of the role (assumed by the tests)
     export PYTHONUNBUFFERED=1
+    ansible-galaxy -r requirements.yml install
     ansible-playbook -i environments/vagrant/inventory site.yml
   EOF
 end

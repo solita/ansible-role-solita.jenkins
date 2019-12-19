@@ -13,6 +13,5 @@ galaxy_info:
     versions:
       - all
 dependencies:
-  - src: geerlingguy.jenkins
-    version: 2.7.3
+  - role: geerlingguy.jenkins
     become: yes
