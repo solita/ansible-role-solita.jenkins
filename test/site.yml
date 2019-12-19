@@ -1,36 +1,52 @@
 ---
 - hosts: vagrant
-
+  
   vars:
     java_packages:
-      - openjdk-8-jdk
+      - java-11-openjdk
 
-  pre_tasks:
-    - name: Add JDK 8 PPA
-      apt_repository: repo='ppa:openjdk-r/ppa'
-      become: yes
-
-  # The unit tests expect that a basic installation is present, because they
-  # limit the role application to the part they're testing with tags.
   roles:
     - solita.jenkins
 
   tasks:
-    - name: Install Ruby development tools
-      apt: name={{ item }} state=present
+    # RedHat Ruby install
+    - name: Install Ruby dependencies
+      yum: 
+        name: ['curl','gpg','gcc','gcc-c++','make','patch','autoconf','automake','bison','libffi-devel','libtool','patch','readline-devel','sqlite-devel','zlib-devel','openssl-devel']
+        state: present
       become: yes
-      with_items:
-        - ruby-dev
-        - g++
       tags: ruby
+      when: ansible_os_family == 'RedHat'
+
+    - name: Install Ruby 2.6 development tools
+      shell: |
+        curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
+        curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import -
+        curl -L get.rvm.io | bash -s stable
+        source ~/.rvm/scripts/rvm
+        rvm reload
+        rvm install 2.6
+        rvm use 2.6 --default
+      tags: ruby
+      when: ansible_os_family == 'RedHat'      
+    
+    # Debian Ruby install
+    - name: Install Ruby development tools
+      apt: 
+        name: ['ruby-dev', 'g++']
+        state: present
+      become: yes
+      tags: ruby
+      when: ansible_os_family == 'Debian'
 
     - name: Install Bundler
       command: gem install bundler
-      become: yes
       tags: ruby
 
     - name: Install Ruby gems
-      command: bundle install
-      args:
-        chdir: /solita.jenkins/test
+      shell: bundle install --gemfile /solita.jenkins/test/Gemfile
+      tags: ruby
+    
+    - name: Run unit tests
+      shell: rake -f /solita.jenkins/test/Rakefile
       tags: ruby

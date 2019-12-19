@@ -6,7 +6,11 @@ Changelog
 Git master
 ----------
 
-- Don't create an SSH key for the ``jenkins`` user.
+--------------------------
+Version 1.4.0 (2019-12-19)
+--------------------------
+
+- Add support for OpenJDK11.
 
 --------------------------
 Version 1.3.2 (2017-05-03)

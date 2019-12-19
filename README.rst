@@ -14,8 +14,30 @@ Documentation
 Development
 -------------
 
-Setup a test environment by running ``vagrant up`` in test directory.
-Execute ``vagrant ssh -c rake`` to run unit tests.
+Setup a test environment by running `vagrant up` in test directory.
+Execute `vagrant ssh -c rake` to run unit tests.
+
+-------------
+OpenJDK 11
+-------------
+This role has dependency on `geerlingguy.java <https://github.com/geerlingguy/ansible-role-java>`.
+`geerlingguy.java <https://github.com/geerlingguy/ansible-role-java>` supports OpenJDK 11 installation out of the box with, by specifying `java_packages` variable in inventory/playbook/extra vars like this:
+
+RedHat/Centos:
+
+```
+vars:
+  java_packages: 
+    - java-11-openjdk
+```
+
+Debian/Ubuntu:
+
+```
+vars:
+  java_packages:
+    - openjdk-11-jdk
+```
 
 ------------
 Contributors
@@ -28,3 +50,4 @@ Contributors
 - `bery <https://github.com/bery>`_
 - `Panu Kalliokoski <https://github.com/pkalliok>`_
 - `Juha Jokimäki <https://github.com/jokimaki>`_
+- `Aleksei Hodunkov <https://github.com/0leksei>`_

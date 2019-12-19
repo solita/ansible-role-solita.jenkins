@@ -4,10 +4,10 @@
 ---
 - name: Install Jenkins plugins.
   command: >
-    {{ solita_jenkins_cli }} install-plugin {{ item }}
+    {{ solita_jenkins_cli }} install-plugin {{ jenkins_updates_url }}/download/plugins/{{ item }}/latest/{{ item }}.hpi
     creates=/var/lib/jenkins/plugins/{{ item }}.jpi
   with_items: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"
   register: plugins
 
 - include: restart.yml
-  when: plugins | changed
+  when: plugins is changed

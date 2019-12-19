@@ -1,0 +1,6 @@
+- src: https://github.com/solita/ansible-role-solita.jenkins.git
+  name: solita.jenkins
+- src: geerlingguy.java
+  name: geerlingguy.java
+- src: geerlingguy.jenkins
+  name: geerlingguy.jenkins

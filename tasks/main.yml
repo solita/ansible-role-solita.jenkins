@@ -35,7 +35,7 @@
 - name: Reload the job-dsl job
   command: >
     {{ solita_jenkins_cli }} reload-job job-dsl
-  when: update_job_dsl_job | changed
+  when: update_job_dsl_job is changed
 
 - include: credentials.yml
   tags: solita_jenkins_credentials
