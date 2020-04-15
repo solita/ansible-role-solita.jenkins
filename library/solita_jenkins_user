@@ -66,7 +66,8 @@ def main():
     if (rc != 0):
         module.fail_json(msg=stderr)
 
-    print(stdout)
+    if (rc == 0):
+        module.exit_json(msg=stdout)
 
 from ansible.module_utils.basic import *
 if __name__ == '__main__':
