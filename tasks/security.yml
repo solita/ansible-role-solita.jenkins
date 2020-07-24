@@ -41,6 +41,7 @@
 - set_fact:
     solita_jenkins_password: "{{ cat_password.stdout }}"
   tags: always
+  when: not ansible_check_mode
 
 - name: Create solita_jenkins auth file
   become: yes
@@ -51,6 +52,7 @@
     group: jenkins
     mode: 0600
   tags: always
+  when: not ansible_check_mode
 
 - name: Create Jenkins security realm configuration script
   become: yes
@@ -61,6 +63,7 @@
     group: jenkins
     mode: 0700
   register: security_realm
+  when: not ansible_check_mode
 
 - name: Check if config.xml exists
   stat:
