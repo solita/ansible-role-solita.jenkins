@@ -11,3 +11,4 @@ solita_jenkins_absent_credentials: []
 solita_jenkins_password_dir: "{{ inventory_dir | default('.') }}/solita_jenkins_default_password"
 jenkins_slack_team_domain: []
 jenkins_slack_auth_token: []
+jenkins_updates_url: []
