@@ -11,6 +11,7 @@
     url: "{{ solita_jenkins_url }}"
     url_username: "solita_jenkins"
     url_password: "{{ solita_jenkins_password }}"
+  with_items: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"
   register: plugins
 
 - include: restart.yml
