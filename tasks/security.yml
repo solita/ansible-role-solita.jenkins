@@ -8,17 +8,18 @@
     solita_jenkins_public_key: "{{ user.ssh_public_key }}"
 
 - name: Install the matrix-auth plugin and its dependencies
-  become: yes
-  get_url:
-    url: "http://updates.jenkins-ci.org/latest/{{ item }}.hpi"
-    dest: /var/lib/jenkins/plugins
-    owner: jenkins
-    group: jenkins
-    mode: 0644
-  register: matrix_auth_plugin
+  community.general.jenkins_plugin:
+    name: "{{ item }}"
+    jenkins_home: "/var/lib/jenkins"
+    timeout: "{{ jenkins_plugin_timeout }}"
+    updates_url: "{{ jenkins_updates_url }}"
+    url: "{{ solita_jenkins_url }}"
+    url_username: "solita_jenkins"
+    url_password: "{{ solita_jenkins_password }}"
   with_items:
     - icon-shim
     - matrix-auth
+  register: matrix_auth_plugin
 
 - name: Create solita_jenkins password file
   become: yes
