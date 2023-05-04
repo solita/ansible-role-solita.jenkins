@@ -3,9 +3,14 @@
 # solita_jenkins_restart: yes.
 ---
 - name: Install Jenkins plugins.
-  command: >
-    {{ solita_jenkins_cli }} install-plugin {{ jenkins_updates_url }}/download/plugins/{{ item }}/latest/{{ item }}.hpi
-    creates=/var/lib/jenkins/plugins/{{ item }}.jpi
+  community.general.jenkins_plugin:
+    name: "{{ item }}"
+    jenkins_home: "/var/lib/jenkins"
+    timeout: "{{ jenkins_plugin_timeout }}"
+    updates_url: "{{ jenkins_updates_url }}"
+    url: "{{ solita_jenkins_url }}"
+    url_username: "solita_jenkins"
+    url_password: "{{ solita_jenkins_password }}"
   with_items: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"
   register: plugins
 
