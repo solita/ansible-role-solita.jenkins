@@ -1,8 +1,8 @@
 ---
-- include: security.yml
+- import_tasks: security.yml
   tags: solita_jenkins_security
 
-- include: plugins.yml
+- import_tasks: plugins.yml
   tags: solita_jenkins_plugins
 
 # Copy job-dsl-config.xml to server so we can use Jenkins CLI to create a new
@@ -37,8 +37,8 @@
     {{ solita_jenkins_cli }} reload-job job-dsl
   when: update_job_dsl_job is changed
 
-- include: credentials.yml
+- import_tasks: credentials.yml
   tags: solita_jenkins_credentials
 
-- include: jobs.yml
+- import_tasks: jobs.yml
   tags: solita_jenkins_jobs

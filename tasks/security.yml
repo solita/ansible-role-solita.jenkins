@@ -105,7 +105,7 @@
     force: no
   register: disable_script_security
 
-- include: restart.yml
+- include_tasks: restart.yml
   when: (matrix_auth_plugin is changed) or (security_realm is changed) or (jnlp_port is changed) or (authorize_project is changed) or (disable_script_security is changed)
 
 - name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'

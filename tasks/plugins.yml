@@ -14,5 +14,5 @@
   with_items: "{{ solita_jenkins_plugins_required + solita_jenkins_plugins }}"
   register: plugins
 
-- include: restart.yml
+- include_tasks: restart.yml
   when: plugins is changed
