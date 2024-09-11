@@ -18,7 +18,8 @@
   register: matrix_auth_plugin
   with_items:
     - icon-shim
-    - matrix-auth
+    - matrix-auth'
+  when: run_security_realm_task | default(true)
 
 - name: Create solita_jenkins password file
   become: yes
@@ -63,7 +64,7 @@
     group: jenkins
     mode: 0700
   register: security_realm
-  when: not ansible_check_mode
+  when: not ansible_check_mode and run_security_realm_task | default(true)
 
 - name: Check if config.xml exists
   stat:
@@ -110,7 +111,7 @@
 
 - name: Check that user variables are only used with solita_jenkins_security_realm='jenkins'
   fail: msg="User variables are only allowed with solita_jenkins_security_realm='jenkins'"
-  when: (item | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins')
+  when: (item | length > 0) and ((solita_jenkins_security_realm | default(None)) != 'jenkins') and run_security_realm_task | default(true)
   with_items:
     - "{{ solita_jenkins_users }}"
     - "{{ solita_jenkins_absent_users }}"
@@ -121,6 +122,7 @@
     name: "{{ item }}"
     password: "{{ lookup('password', solita_jenkins_password_dir + '/' + item) }}"
   with_items: "{{ solita_jenkins_users }}"
+  when: run_security_realm_task | default(true)
 
 - name: Remove absent Jenkins users
   solita_jenkins_user:
@@ -128,3 +130,4 @@
     name: "{{ item }}"
     state: absent
   with_items: "{{ solita_jenkins_absent_users }}"
+  when: run_security_realm_task | default(true)
